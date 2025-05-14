@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Shield, Zap, Globe } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Shield, Zap, Globe } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -13,24 +13,38 @@ export default function LandingPage() {
             <span className="text-xl font-bold">SecureScanX</span>
           </div>
           <nav className="hidden md:flex space-x-8">
-            <Link href="#features" className="hover:text-[#0080ff] transition-colors">
+            <Link
+              href="#features"
+              className="hover:text-[#0080ff] transition-colors"
+            >
               Features
             </Link>
-            <Link href="#regions" className="hover:text-[#0080ff] transition-colors">
+            <Link
+              href="#regions"
+              className="hover:text-[#0080ff] transition-colors"
+            >
               Regions
             </Link>
-            <Link href="#about" className="hover:text-[#0080ff] transition-colors">
+            <Link
+              href="#about"
+              className="hover:text-[#0080ff] transition-colors"
+            >
               About
             </Link>
           </nav>
           <div className="flex space-x-4">
             <Link href="/login">
-              <Button variant="outline" className="border-[#0080ff] text-[#0080ff] hover:bg-[#0080ff] hover:text-white">
+              <Button
+                variant="outline"
+                className="border-[#0080ff] text-[#0080ff] hover:bg-[#0080ff] hover:text-white"
+              >
                 Login
               </Button>
             </Link>
             <Link href="/signup">
-              <Button className="bg-[#0080ff] hover:bg-[#0060cc] text-white">Sign Up</Button>
+              <Button className="bg-[#0080ff] hover:bg-[#0060cc] text-white">
+                Sign Up
+              </Button>
             </Link>
           </div>
         </div>
@@ -48,16 +62,24 @@ export default function LandingPage() {
               SecureScanX — Ghana's Intelligent Cyber Defense Tool
             </h1>
             <p className="text-xl text-gray-300 mb-10">
-              Advanced cybersecurity monitoring and protection designed specifically for Ghana's digital infrastructure.
+              Advanced cybersecurity monitoring and protection designed
+              specifically for Ghana's digital infrastructure.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/signup">
-                <Button size="lg" className="bg-[#0080ff] hover:bg-[#0060cc] text-white w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="bg-[#0080ff] hover:bg-[#0060cc] text-white w-full sm:w-auto"
+                >
                   Get Started
                 </Button>
               </Link>
               <Link href="/login">
-                <Button size="lg" variant="outline" className="border-gray-600 hover:bg-gray-800 w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-gray-600 hover:bg-gray-800 w-full sm:w-auto"
+                >
                   Login to Dashboard
                 </Button>
               </Link>
@@ -77,18 +99,24 @@ export default function LandingPage() {
               <div className="bg-[#0080ff]/10 p-3 rounded-full w-fit mb-6">
                 <Zap className="h-8 w-8 text-[#0080ff]" />
               </div>
-              <h3 className="text-xl font-bold mb-4">Passive and Active Scanning</h3>
+              <h3 className="text-xl font-bold mb-4">
+                Passive and Active Scanning
+              </h3>
               <p className="text-gray-400">
-                Comprehensive scanning capabilities to detect vulnerabilities without disrupting your systems.
+                Comprehensive scanning capabilities to detect vulnerabilities
+                without disrupting your systems.
               </p>
             </div>
             <div className="bg-[#212121] p-8 rounded-xl border border-gray-800 hover:border-[#0080ff] transition-colors">
               <div className="bg-[#ff3333]/10 p-3 rounded-full w-fit mb-6">
                 <Shield className="h-8 w-8 text-[#ff3333]" />
               </div>
-              <h3 className="text-xl font-bold mb-4">Real-time Threat Detection</h3>
+              <h3 className="text-xl font-bold mb-4">
+                Real-time Threat Detection
+              </h3>
               <p className="text-gray-400">
-                Instant alerts and notifications when suspicious activities are detected on your network.
+                Instant alerts and notifications when suspicious activities are
+                detected on your network.
               </p>
             </div>
             <div className="bg-[#212121] p-8 rounded-xl border border-gray-800 hover:border-[#0080ff] transition-colors">
@@ -97,7 +125,8 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-4">Region-based Reporting</h3>
               <p className="text-gray-400">
-                Specialized reporting for all 16 regions of Ghana, with localized threat intelligence.
+                Specialized reporting for all 16 regions of Ghana, with
+                localized threat intelligence.
               </p>
             </div>
           </div>
@@ -108,7 +137,8 @@ export default function LandingPage() {
       <section id="regions" className="py-20 bg-[#121212]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-16">
-            Coverage Across <span className="text-[#0080ff]">All 16 Regions</span>
+            Coverage Across{" "}
+            <span className="text-[#0080ff]">All 16 Regions</span>
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -149,7 +179,9 @@ export default function LandingPage() {
               <p className="text-gray-400">Organizations Protected</p>
             </div>
             <div>
-              <h3 className="text-4xl font-bold text-[#0080ff] mb-2">10,000+</h3>
+              <h3 className="text-4xl font-bold text-[#0080ff] mb-2">
+                10,000+
+              </h3>
               <p className="text-gray-400">Threats Detected</p>
             </div>
             <div>
@@ -167,18 +199,28 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#0a0a0a] to-[#1a1a1a]">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Secure Your Digital Infrastructure?</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            Ready to Secure Your Digital Infrastructure?
+          </h2>
           <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Join Ghana's leading organizations in protecting your systems with SecureScanX.
+            Join Ghana's leading organizations in protecting your systems with
+            SecureScanX.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/signup">
-              <Button size="lg" className="bg-[#0080ff] hover:bg-[#0060cc] text-white w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="bg-[#0080ff] hover:bg-[#0060cc] text-white w-full sm:w-auto"
+              >
                 Create Free Account
               </Button>
             </Link>
             <Link href="#contact">
-              <Button size="lg" variant="outline" className="border-gray-600 hover:bg-gray-800 w-full sm:w-auto">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-gray-600 hover:bg-gray-800 w-full sm:w-auto"
+              >
                 Contact Sales
               </Button>
             </Link>
@@ -195,11 +237,13 @@ export default function LandingPage() {
               <span className="text-xl font-bold">SecureScanX</span>
             </div>
             <div className="text-center md:text-right">
-              <p className="text-gray-400">© 2025 SecureScanX – Built for Ghana's Cyber Future</p>
+              <p className="text-gray-400">
+                © 2025 SecureScanX – Built for Ghana's Cyber Future
+              </p>
             </div>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
