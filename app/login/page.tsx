@@ -23,6 +23,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (token) {
       sessionStorage.setItem("token", token);
+      setIsLoading(false);
     }
   }, [token]);
 
