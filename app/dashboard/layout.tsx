@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useAppSelector } from "@/lib/hook";
+import { logout } from "@/lib/features/userSlice";
 
 export default function DashboardLayout({
   children,
@@ -279,7 +280,11 @@ export default function DashboardLayout({
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-gray-700" />
                   <DropdownMenuItem className="cursor-pointer">
-                    <Link href="/" className="flex w-full">
+                    <Link
+                      href="/"
+                      className="flex w-full"
+                      onClick={() => logout()}
+                    >
                       Logout
                     </Link>
                   </DropdownMenuItem>
