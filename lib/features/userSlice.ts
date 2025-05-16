@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { loginUser } from "../utils/user"
+import { loginUser, getMe } from "../utils/user"
 
 export type UserState = {
     user: any
@@ -30,6 +30,18 @@ export const userSlice = createSlice({
                 state.token = action.payload.access
             })
             .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+            })
+            .addCase(getMe.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(getMe.fulfilled, (state, action) => {
+                state.loading = false
+                state.user = action.payload
+            })
+            .addCase(getMe.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })

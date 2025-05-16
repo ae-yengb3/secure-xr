@@ -8,28 +8,32 @@ import { Shield, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginUser } from "@/lib/utils/user";
+import { getMe, loginUser } from "@/lib/utils/user";
 import { useAppDispatch, useAppSelector } from "../../lib/hook";
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { token } = useAppSelector((state) => state.user);
+  const { token, loading, user } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     if (token) {
       sessionStorage.setItem("token", token);
-      setIsLoading(false);
+      dispatch(getMe());
     }
   }, [token]);
 
+  useEffect(() => {
+    if (user) {
+      window.location.href = "/dashboard";
+    }
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     const credentials = {
       email,
@@ -99,9 +103,9 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 className="w-full bg-[#0080ff] hover:bg-[#0060cc] text-white"
-                disabled={isLoading}
+                disabled={loading}
               >
-                {isLoading ? "Logging in..." : "Login"}
+                {loading ? "Logging in..." : "Login"}
               </Button>
             </div>
           </form>
