@@ -10,8 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getMe, loginUser } from "@/lib/utils/user";
 import { useAppDispatch, useAppSelector } from "../../lib/hook";
+import { useRouter } from 'next/navigation'
+
 
 export default function LoginPage() {
+  const router = useRouter();
   const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
@@ -28,7 +31,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     }
   }, [user]);
 

@@ -31,8 +31,8 @@ export const getMe = createAsyncThunk('user/getMe', async () => {
 
 export const registerUser = createAsyncThunk(
     'user/register',
-    async (credentials) => {
-        const response = await fetch(`${serverUrl}/secure/create/user`, {
+    async (credentials: { fullname: string; email: string; password: string; location: string }) => {
+        const response = await fetch(`${serverUrl}/secure/create/user/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

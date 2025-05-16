@@ -1,15 +1,42 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Shield, AlertTriangle, CheckCircle, Clock, Play, Users, FileText, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DonutChart } from "@/components/ui/chart"
+import { useEffect, useState } from "react";
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Play,
+  Users,
+  FileText,
+  ArrowRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DonutChart } from "@/components/ui/chart";
+import { useAppSelector } from "@/lib/hook";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState("overview");
+  const router = useRouter();
+
+  const { user } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user]);
 
   // Sample data for charts
   const vulnerabilityData = [
@@ -17,29 +44,70 @@ export default function DashboardPage() {
     { name: "High", value: 24, color: "#ff9933" },
     { name: "Medium", value: 36, color: "#ffcc33" },
     { name: "Low", value: 28, color: "#0080ff" },
-  ]
+  ];
 
   // Sample data for scans
   const activeScans = [
-    { id: 1, target: "192.168.1.0/24", status: "In Progress", progress: 65, startTime: "10:30 AM" },
-    { id: 2, target: "10.0.0.1", status: "Starting", progress: 5, startTime: "10:45 AM" },
-    { id: 3, target: "web-server.local", status: "In Progress", progress: 32, startTime: "10:15 AM" },
-  ]
+    {
+      id: 1,
+      target: "192.168.1.0/24",
+      status: "In Progress",
+      progress: 65,
+      startTime: "10:30 AM",
+    },
+    {
+      id: 2,
+      target: "10.0.0.1",
+      status: "Starting",
+      progress: 5,
+      startTime: "10:45 AM",
+    },
+    {
+      id: 3,
+      target: "web-server.local",
+      status: "In Progress",
+      progress: 32,
+      startTime: "10:15 AM",
+    },
+  ];
 
   // Sample data for alerts
   const recentAlerts = [
-    { id: 1, message: "Open Port Detected on 192.168.1.1", severity: "Critical", time: "11:23 AM" },
-    { id: 2, message: "Outdated SSL Certificate on web-server", severity: "High", time: "10:45 AM" },
-    { id: 3, message: "Unusual Login Activity Detected", severity: "Medium", time: "09:30 AM" },
-    { id: 4, message: "Firewall Rule Misconfiguration", severity: "High", time: "Yesterday" },
-  ]
+    {
+      id: 1,
+      message: "Open Port Detected on 192.168.1.1",
+      severity: "Critical",
+      time: "11:23 AM",
+    },
+    {
+      id: 2,
+      message: "Outdated SSL Certificate on web-server",
+      severity: "High",
+      time: "10:45 AM",
+    },
+    {
+      id: 3,
+      message: "Unusual Login Activity Detected",
+      severity: "Medium",
+      time: "09:30 AM",
+    },
+    {
+      id: 4,
+      message: "Firewall Rule Misconfiguration",
+      severity: "High",
+      time: "Yesterday",
+    },
+  ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-gray-400">Welcome back, John. Here's what's happening with your network.</p>
+          <p className="text-gray-400">
+            Welcome back, {user?.fullname.split(" ")[0]}. Here's what's
+            happening with your network.
+          </p>
         </div>
         <div className="flex gap-2">
           <Button className="bg-[#0080ff] hover:bg-[#0060cc]">
@@ -49,15 +117,28 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6" onValueChange={setActiveTab}>
+      <Tabs
+        defaultValue="overview"
+        className="space-y-6"
+        onValueChange={setActiveTab}
+      >
         <TabsList className="bg-[#1a1a1a] border border-gray-800">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white">
+          <TabsTrigger
+            value="overview"
+            className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white"
+          >
             Overview
           </TabsTrigger>
-          <TabsTrigger value="scans" className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white">
+          <TabsTrigger
+            value="scans"
+            className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white"
+          >
             Scans
           </TabsTrigger>
-          <TabsTrigger value="alerts" className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white">
+          <TabsTrigger
+            value="alerts"
+            className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white"
+          >
             Alerts
           </TabsTrigger>
         </TabsList>
@@ -67,46 +148,60 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-[#1a1a1a] border-gray-800">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Total Scans</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Total Scans
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
                   <Shield className="h-6 w-6 text-[#0080ff] mr-2" />
                   <div className="text-2xl font-bold">248</div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">+12% from last month</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  +12% from last month
+                </p>
               </CardContent>
             </Card>
 
             <Card className="bg-[#1a1a1a] border-gray-800">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Completed Scans</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Completed Scans
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
                   <CheckCircle className="h-6 w-6 text-green-500 mr-2" />
                   <div className="text-2xl font-bold">245</div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">98.8% completion rate</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  98.8% completion rate
+                </p>
               </CardContent>
             </Card>
 
             <Card className="bg-[#1a1a1a] border-gray-800">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Active Scans</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Active Scans
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
                   <Clock className="h-6 w-6 text-[#ffcc33] mr-2" />
                   <div className="text-2xl font-bold">3</div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">2 scheduled for today</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  2 scheduled for today
+                </p>
               </CardContent>
             </Card>
 
             <Card className="bg-[#1a1a1a] border-gray-800">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">Vulnerabilities</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-400">
+                  Vulnerabilities
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
@@ -124,7 +219,9 @@ export default function DashboardPage() {
             <Card className="bg-[#1a1a1a] border-gray-800 lg:col-span-1">
               <CardHeader>
                 <CardTitle>Vulnerability Overview</CardTitle>
-                <CardDescription className="text-gray-400">Distribution by severity</CardDescription>
+                <CardDescription className="text-gray-400">
+                  Distribution by severity
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex justify-center">
                 <div className="w-48 h-48">
@@ -154,7 +251,9 @@ export default function DashboardPage() {
             <Card className="bg-[#1a1a1a] border-gray-800 lg:col-span-2">
               <CardHeader>
                 <CardTitle>Live Scans</CardTitle>
-                <CardDescription className="text-gray-400">Currently running scans</CardDescription>
+                <CardDescription className="text-gray-400">
+                  Currently running scans
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -176,13 +275,20 @@ export default function DashboardPage() {
                         <span>Progress: {scan.progress}%</span>
                         <span>Started: {scan.startTime}</span>
                       </div>
-                      <Progress value={scan.progress} className="h-1.5 bg-gray-700" indicatorClassName="bg-[#0080ff]" />
+                      <Progress
+                        value={scan.progress}
+                        className="h-1.5 bg-gray-700"
+                        indicatorClassName="bg-[#0080ff]"
+                      />
                     </div>
                   ))}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full border-gray-700 hover:bg-gray-800 hover:text-white">
+                <Button
+                  variant="outline"
+                  className="w-full border-gray-700 hover:bg-gray-800 hover:text-white"
+                >
                   View All Scans
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -196,19 +302,24 @@ export default function DashboardPage() {
             <Card className="bg-[#1a1a1a] border-gray-800 lg:col-span-2">
               <CardHeader>
                 <CardTitle>Recent Alerts</CardTitle>
-                <CardDescription className="text-gray-400">Latest security notifications</CardDescription>
+                <CardDescription className="text-gray-400">
+                  Latest security notifications
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentAlerts.map((alert) => (
-                    <div key={alert.id} className="bg-[#212121] p-3 rounded-lg flex items-start">
+                    <div
+                      key={alert.id}
+                      className="bg-[#212121] p-3 rounded-lg flex items-start"
+                    >
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
                           alert.severity === "Critical"
                             ? "bg-[#ff3333]/20 text-[#ff3333]"
                             : alert.severity === "High"
-                              ? "bg-[#ff9933]/20 text-[#ff9933]"
-                              : "bg-[#ffcc33]/20 text-[#ffcc33]"
+                            ? "bg-[#ff9933]/20 text-[#ff9933]"
+                            : "bg-[#ffcc33]/20 text-[#ffcc33]"
                         }`}
                       >
                         <AlertTriangle className="h-4 w-4" />
@@ -216,15 +327,17 @@ export default function DashboardPage() {
                       <div className="flex-1">
                         <div className="flex justify-between">
                           <div className="font-medium">{alert.message}</div>
-                          <div className="text-xs text-gray-400">{alert.time}</div>
+                          <div className="text-xs text-gray-400">
+                            {alert.time}
+                          </div>
                         </div>
                         <div
                           className={`text-xs mt-1 ${
                             alert.severity === "Critical"
                               ? "text-[#ff3333]"
                               : alert.severity === "High"
-                                ? "text-[#ff9933]"
-                                : "text-[#ffcc33]"
+                              ? "text-[#ff9933]"
+                              : "text-[#ffcc33]"
                           }`}
                         >
                           {alert.severity} Severity
@@ -235,7 +348,10 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full border-gray-700 hover:bg-gray-800 hover:text-white">
+                <Button
+                  variant="outline"
+                  className="w-full border-gray-700 hover:bg-gray-800 hover:text-white"
+                >
                   View All Alerts
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -246,7 +362,9 @@ export default function DashboardPage() {
             <Card className="bg-[#1a1a1a] border-gray-800">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
-                <CardDescription className="text-gray-400">Common tasks</CardDescription>
+                <CardDescription className="text-gray-400">
+                  Common tasks
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button className="w-full bg-[#0080ff] hover:bg-[#0060cc] justify-start">
@@ -276,7 +394,9 @@ export default function DashboardPage() {
           <Card className="bg-[#1a1a1a] border-gray-800">
             <CardHeader>
               <CardTitle>Scan History</CardTitle>
-              <CardDescription className="text-gray-400">All your recent and scheduled scans</CardDescription>
+              <CardDescription className="text-gray-400">
+                All your recent and scheduled scans
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="rounded-md border border-gray-800">
@@ -284,12 +404,24 @@ export default function DashboardPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#212121] border-b border-gray-800">
-                        <th className="px-4 py-3 text-left font-medium">Target</th>
-                        <th className="px-4 py-3 text-left font-medium">Type</th>
-                        <th className="px-4 py-3 text-left font-medium">Status</th>
-                        <th className="px-4 py-3 text-left font-medium">Start Time</th>
-                        <th className="px-4 py-3 text-left font-medium">Duration</th>
-                        <th className="px-4 py-3 text-left font-medium">Issues</th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Target
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Type
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Status
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Start Time
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Duration
+                        </th>
+                        <th className="px-4 py-3 text-left font-medium">
+                          Issues
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -335,7 +467,10 @@ export default function DashboardPage() {
                           issues: "0",
                         },
                       ].map((scan, i) => (
-                        <tr key={i} className="border-b border-gray-800 hover:bg-[#212121]">
+                        <tr
+                          key={i}
+                          className="border-b border-gray-800 hover:bg-[#212121]"
+                        >
                           <td className="px-4 py-3">{scan.target}</td>
                           <td className="px-4 py-3">{scan.type}</td>
                           <td className="px-4 py-3">
@@ -344,8 +479,8 @@ export default function DashboardPage() {
                                 scan.status === "Completed"
                                   ? "bg-green-500/20 text-green-500"
                                   : scan.status === "In Progress"
-                                    ? "bg-[#0080ff]/20 text-[#0080ff]"
-                                    : "bg-yellow-500/20 text-yellow-500"
+                                  ? "bg-[#0080ff]/20 text-[#0080ff]"
+                                  : "bg-yellow-500/20 text-yellow-500"
                               }`}
                             >
                               {scan.status}
@@ -360,8 +495,8 @@ export default function DashboardPage() {
                                   Number.parseInt(scan.issues) > 5
                                     ? "bg-[#ff3333]/20 text-[#ff3333]"
                                     : Number.parseInt(scan.issues) > 0
-                                      ? "bg-[#ff9933]/20 text-[#ff9933]"
-                                      : "bg-green-500/20 text-green-500"
+                                    ? "bg-[#ff9933]/20 text-[#ff9933]"
+                                    : "bg-green-500/20 text-green-500"
                                 }`}
                               >
                                 {scan.issues}
@@ -383,7 +518,9 @@ export default function DashboardPage() {
           <Card className="bg-[#1a1a1a] border-gray-800">
             <CardHeader>
               <CardTitle>Security Alerts</CardTitle>
-              <CardDescription className="text-gray-400">All detected security issues</CardDescription>
+              <CardDescription className="text-gray-400">
+                All detected security issues
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -431,8 +568,8 @@ export default function DashboardPage() {
                           alert.severity === "Critical"
                             ? "bg-[#ff3333]/20 text-[#ff3333]"
                             : alert.severity === "High"
-                              ? "bg-[#ff9933]/20 text-[#ff9933]"
-                              : "bg-[#ffcc33]/20 text-[#ffcc33]"
+                            ? "bg-[#ff9933]/20 text-[#ff9933]"
+                            : "bg-[#ffcc33]/20 text-[#ffcc33]"
                         }`}
                       >
                         <AlertTriangle className="h-5 w-5" />
@@ -440,25 +577,36 @@ export default function DashboardPage() {
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                           <div className="font-medium">{alert.message}</div>
-                          <div className="text-xs text-gray-400">{alert.time}</div>
+                          <div className="text-xs text-gray-400">
+                            {alert.time}
+                          </div>
                         </div>
                         <div
                           className={`text-xs mt-1 mb-2 ${
                             alert.severity === "Critical"
                               ? "text-[#ff3333]"
                               : alert.severity === "High"
-                                ? "text-[#ff9933]"
-                                : "text-[#ffcc33]"
+                              ? "text-[#ff9933]"
+                              : "text-[#ffcc33]"
                           }`}
                         >
                           {alert.severity} Severity
                         </div>
-                        <p className="text-sm text-gray-400">{alert.description}</p>
+                        <p className="text-sm text-gray-400">
+                          {alert.description}
+                        </p>
                         <div className="flex gap-2 mt-3">
-                          <Button size="sm" className="bg-[#0080ff] hover:bg-[#0060cc]">
+                          <Button
+                            size="sm"
+                            className="bg-[#0080ff] hover:bg-[#0060cc]"
+                          >
                             Resolve
                           </Button>
-                          <Button size="sm" variant="outline" className="border-gray-700 hover:bg-gray-800">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-gray-700 hover:bg-gray-800"
+                          >
                             Ignore
                           </Button>
                         </div>
@@ -472,5 +620,5 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
