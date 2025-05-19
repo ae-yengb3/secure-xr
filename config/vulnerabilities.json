@@ -1,0 +1,497 @@
+{
+  "SQL_Injection": {
+    "name": "SQL Injection",
+    "tool": "SQLMap",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Allows attackers to execute malicious SQL statements to control a database server",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "XSS": {
+    "name": "Cross-Site Scripting",
+    "tool": "XSStrike",
+    "language": "Python",
+    "severity": "High",
+    "description": "Enables attackers to inject client-side scripts into web pages viewed by other users",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "CSRF": {
+    "name": "Cross-Site Request Forgery",
+    "tool": "Burp Suite",
+    "language": "Java",
+    "severity": "Medium",
+    "description": "Forces users to execute unwanted actions on a web application in which they're authenticated",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "Security_Headers": {
+    "name": "Security Headers Missing",
+    "tool": "SecurityHeaders.com",
+    "language": "JavaScript",
+    "severity": "Medium",
+    "description": "Missing security headers that help mitigate common web vulnerabilities",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "SSL_TLS": {
+    "name": "SSL/TLS Vulnerabilities",
+    "tool": "SSLyze",
+    "language": "Python",
+    "severity": "High",
+    "description": "Weaknesses in SSL/TLS configuration that could lead to man-in-the-middle attacks",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Sensitive_Data_Exposure": {
+    "name": "Sensitive Data Exposure",
+    "tool": "TruffleHog",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Exposure of sensitive data due to insufficient protection",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "Brute_Force": {
+    "name": "Brute Force Vulnerability",
+    "tool": "Hydra",
+    "language": "C",
+    "severity": "High",
+    "description": "Lack of protection against password guessing attacks",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Directory_Traversal": {
+    "name": "Directory Traversal",
+    "tool": "DotDotPwn",
+    "language": "Perl",
+    "severity": "High",
+    "description": "Allows attackers to access restricted directories and files",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Command_Injection": {
+    "name": "Command Injection",
+    "tool": "Commix",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Allows execution of arbitrary commands on the host operating system",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "SSRF": {
+    "name": "Server-Side Request Forgery",
+    "tool": "SSRFmap",
+    "language": "Python",
+    "severity": "High",
+    "description": "Allows attackers to induce the server to make requests to an unintended location",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Insecure_Deserialization": {
+    "name": "Insecure Deserialization",
+    "tool": "PHPGGC",
+    "language": "PHP",
+    "severity": "Critical",
+    "description": "Processing untrusted data through deserialization, potentially leading to remote code execution",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "JWT_Vulnerabilities": {
+    "name": "JWT Vulnerabilities",
+    "tool": "jwt_tool",
+    "language": "Python",
+    "severity": "High",
+    "description": "Weaknesses in JWT implementation that can lead to authentication bypass or privilege escalation",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "Broken_Authentication": {
+    "name": "Broken Authentication",
+    "tool": "OWASP ZAP",
+    "language": "Java",
+    "severity": "Critical",
+    "description": "Flaws in authentication mechanisms that allow attackers to assume other users' identities",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "XML_External_Entity": {
+    "name": "XML External Entity (XXE)",
+    "tool": "XXEinjector",
+    "language": "Ruby",
+    "severity": "High",
+    "description": "Processing XML input containing references to external entities, leading to data disclosure or DoS",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Insecure_File_Upload": {
+    "name": "Insecure File Upload",
+    "tool": "FuxploiderX",
+    "language": "Python",
+    "severity": "High",
+    "description": "Allows attackers to upload malicious files that can be executed on the server",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Open_Redirect": {
+    "name": "Open Redirect",
+    "tool": "Injectus",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Redirects users to untrusted websites, often used in phishing attacks",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "CORS_Misconfiguration": {
+    "name": "CORS Misconfiguration",
+    "tool": "CORScanner",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Improper CORS configuration allowing unauthorized access to sensitive data",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "GraphQL_Vulnerabilities": {
+    "name": "GraphQL Vulnerabilities",
+    "tool": "InQL",
+    "language": "Python",
+    "severity": "High",
+    "description": "Security issues in GraphQL implementations including introspection, DoS, and injection attacks",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "API_Key_Exposure": {
+    "name": "API Key Exposure",
+    "tool": "GitLeaks",
+    "language": "Go",
+    "severity": "Critical",
+    "description": "Exposure of API keys and secrets in client-side code or repositories",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Prototype_Pollution": {
+    "name": "Prototype Pollution",
+    "tool": "NodeSecure",
+    "language": "JavaScript",
+    "severity": "High",
+    "description": "JavaScript vulnerability allowing attackers to modify object prototypes, leading to DoS or XSS",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "DOM_Based_XSS": {
+    "name": "DOM-Based XSS",
+    "tool": "DOMPurify",
+    "language": "JavaScript",
+    "severity": "High",
+    "description": "Client-side JavaScript modifies the DOM in an unsafe way based on user-controllable data",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "NoSQL_Injection": {
+    "name": "NoSQL Injection",
+    "tool": "NoSQLMap",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Injection attacks targeting NoSQL databases like MongoDB",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "CRLF_Injection": {
+    "name": "CRLF Injection",
+    "tool": "CRLFuzz",
+    "language": "Go",
+    "severity": "Medium",
+    "description": "Injection of CRLF sequences to split HTTP response headers, potentially leading to header injection or XSS",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Server_Side_Template_Injection": {
+    "name": "Server-Side Template Injection",
+    "tool": "Tplmap",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Injection of template directives in template engines, potentially leading to RCE",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Insecure_Direct_Object_Reference": {
+    "name": "Insecure Direct Object Reference",
+    "tool": "OWASP ZAP",
+    "language": "Java",
+    "severity": "High",
+    "description": "Exposing internal implementation objects to users without access control checks",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Session_Fixation": {
+    "name": "Session Fixation",
+    "tool": "Burp Suite",
+    "language": "Java",
+    "severity": "High",
+    "description": "Attacker sets a user's session ID to one known to the attacker, then waits for user to authenticate",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Clickjacking": {
+    "name": "Clickjacking",
+    "tool": "Clickjacking Tester",
+    "language": "JavaScript",
+    "severity": "Medium",
+    "description": "UI redress attack where users are tricked into clicking on something different from what they perceive",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "WebSocket_Vulnerabilities": {
+    "name": "WebSocket Vulnerabilities",
+    "tool": "OWASP ZAP",
+    "language": "Java",
+    "severity": "High",
+    "description": "Security issues in WebSocket implementations including lack of authentication and encryption",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "HTTP_Parameter_Pollution": {
+    "name": "HTTP Parameter Pollution",
+    "tool": "OWASP ZAP",
+    "language": "Java",
+    "severity": "Medium",
+    "description": "Supplying multiple parameters with the same name to manipulate or bypass security controls",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Content_Security_Policy": {
+    "name": "Content Security Policy Issues",
+    "tool": "CSP Evaluator",
+    "language": "JavaScript",
+    "severity": "Medium",
+    "description": "Missing or misconfigured Content Security Policy headers that could allow XSS attacks",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Subdomain_Takeover": {
+    "name": "Subdomain Takeover",
+    "tool": "SubOver",
+    "language": "Go",
+    "severity": "Critical",
+    "description": "Vulnerable DNS records pointing to services that can be claimed by attackers",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "OAuth_Vulnerabilities": {
+    "name": "OAuth Vulnerabilities",
+    "tool": "OAuthScan",
+    "language": "Python",
+    "severity": "High",
+    "description": "Security issues in OAuth implementation including token leakage and improper validation",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "SAML_Vulnerabilities": {
+    "name": "SAML Vulnerabilities",
+    "tool": "SAMLRaider",
+    "language": "Java",
+    "severity": "Critical",
+    "description": "Security issues in SAML implementation including signature bypassing and XML attacks",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Host_Header_Injection": {
+    "name": "Host Header Injection",
+    "tool": "Burp Suite",
+    "language": "Java",
+    "severity": "Medium",
+    "description": "Manipulation of the Host header to perform cache poisoning, password reset poisoning, etc.",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Path_Traversal": {
+    "name": "Path Traversal",
+    "tool": "DotDotPwn",
+    "language": "Perl",
+    "severity": "High",
+    "description": "Accessing files and directories outside of the web root folder using ../ sequences",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Insecure_Cryptographic_Storage": {
+    "name": "Insecure Cryptographic Storage",
+    "tool": "CryptoLyzer",
+    "language": "Python",
+    "severity": "High",
+    "description": "Improper encryption of sensitive data or use of weak cryptographic algorithms",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Business_Logic_Vulnerabilities": {
+    "name": "Business Logic Vulnerabilities",
+    "tool": "Manual Testing",
+    "language": "N/A",
+    "severity": "High",
+    "description": "Flaws in the design and implementation of application that allow attackers to manipulate legitimate functionality",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Race_Condition": {
+    "name": "Race Condition",
+    "tool": "Burp Turbo Intruder",
+    "language": "Java",
+    "severity": "High",
+    "description": "Vulnerability occurring when multiple processes access and manipulate the same data concurrently",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "File_Inclusion": {
+    "name": "File Inclusion",
+    "tool": "LFI Suite",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Including files from local filesystem (LFI) or remote servers (RFI) leading to information disclosure or RCE",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Mass_Assignment": {
+    "name": "Mass Assignment",
+    "tool": "OWASP ZAP",
+    "language": "Java",
+    "severity": "High",
+    "description": "Binding client-provided data to data models without proper filtering of properties",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Server_Side_Request_Forgery": {
+    "name": "Server-Side Request Forgery",
+    "tool": "SSRFmap",
+    "language": "Python",
+    "severity": "High",
+    "description": "Attacker can make the server perform requests to unintended locations",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Improper_Access_Control": {
+    "name": "Improper Access Control",
+    "tool": "AuthMatrix",
+    "language": "Java",
+    "severity": "High",
+    "description": "Insufficient authorization checks allowing users to access resources they shouldn't have access to",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Insecure_CORS_Configuration": {
+    "name": "Insecure CORS Configuration",
+    "tool": "CORScanner",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Misconfigured Cross-Origin Resource Sharing headers allowing unauthorized access to sensitive data",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "HTTP_Response_Splitting": {
+    "name": "HTTP Response Splitting",
+    "tool": "Burp Suite",
+    "language": "Java",
+    "severity": "Medium",
+    "description": "Injection of CRLF sequences to split HTTP response headers, potentially leading to cache poisoning or XSS",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Unvalidated_Redirects": {
+    "name": "Unvalidated Redirects",
+    "tool": "OWASP ZAP",
+    "language": "Java",
+    "severity": "Medium",
+    "description": "Application redirects to user-supplied URLs without validation, enabling phishing attacks",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "Weak_Password_Policy": {
+    "name": "Weak Password Policy",
+    "tool": "Password Policy Tester",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Insufficient password requirements allowing easily guessable passwords",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Missing_Rate_Limiting": {
+    "name": "Missing Rate Limiting",
+    "tool": "Rate Limit Tester",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Lack of request rate limiting enabling brute force, DoS, or enumeration attacks",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Improper_Error_Handling": {
+    "name": "Improper Error Handling",
+    "tool": "Error Hunter",
+    "language": "Python",
+    "severity": "Low",
+    "description": "Verbose error messages revealing sensitive information about the application",
+    "passiveScan": true,
+    "activeScan": true
+  },
+  "Insecure_HTTP_Methods": {
+    "name": "Insecure HTTP Methods",
+    "tool": "Nmap",
+    "language": "C",
+    "severity": "Medium",
+    "description": "Dangerous HTTP methods enabled (PUT, DELETE) that could allow unauthorized modifications",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Insufficient_Logging": {
+    "name": "Insufficient Logging & Monitoring",
+    "tool": "Log Analyzer",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Inadequate logging of security events making it difficult to detect and respond to breaches",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Hardcoded_Credentials": {
+    "name": "Hardcoded Credentials",
+    "tool": "TruffleHog",
+    "language": "Python",
+    "severity": "Critical",
+    "description": "Credentials embedded in source code or configuration files",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Vulnerable_Dependencies": {
+    "name": "Vulnerable Dependencies",
+    "tool": "OWASP Dependency-Check",
+    "language": "Java",
+    "severity": "High",
+    "description": "Use of libraries and components with known vulnerabilities",
+    "passiveScan": true,
+    "activeScan": false
+  },
+  "Insecure_Randomness": {
+    "name": "Insecure Randomness",
+    "tool": "Entropy Analyzer",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Use of weak random number generators for security-critical functions",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Unrestricted_File_Upload": {
+    "name": "Unrestricted File Upload",
+    "tool": "Fuxploider",
+    "language": "Python",
+    "severity": "High",
+    "description": "Allows uploading of potentially dangerous file types that could be executed on the server",
+    "passiveScan": false,
+    "activeScan": true
+  },
+  "Insecure_Cookies": {
+    "name": "Insecure Cookies",
+    "tool": "Cookie Scanner",
+    "language": "Python",
+    "severity": "Medium",
+    "description": "Cookies missing secure or HttpOnly flags, or with overly permissive settings",
+    "passiveScan": true,
+    "activeScan": false
+  }
+}
