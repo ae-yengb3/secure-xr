@@ -83,8 +83,7 @@ export default function DashboardLayout({
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/scans", label: "Scans", icon: Scan },
-    { href: "/reports", label: "Reports", icon: FileBarChart },
-    { href: "/alerts", label: "Alerts", icon: Bell },
+    { href: "/results", label: "Results", icon: FileBarChart },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
@@ -209,7 +208,7 @@ export default function DashboardLayout({
             <div className="flex items-center space-x-4">
               <div className="hidden md:block text-sm text-gray-400">
                 <div>{formatDate(currentTime)}</div>
-                <div className="text-right">{formatTime(currentTime)}</div>
+                {/* <div className="text-right">{formatTime(currentTime)}</div> */}
               </div>
 
               <DropdownMenu>

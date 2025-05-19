@@ -110,7 +110,12 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-[#0080ff] hover:bg-[#0060cc]">
+          <Button
+            className="bg-[#0080ff] hover:bg-[#0060cc]"
+            onClick={() => {
+              router.push("/scans");
+            }}
+          >
             <Play className="mr-2 h-4 w-4" />
             Start New Scan
           </Button>
@@ -139,7 +144,7 @@ export default function DashboardPage() {
             value="alerts"
             className="data-[state=active]:bg-[#0080ff] data-[state=active]:text-white"
           >
-            Alerts
+            Results
           </TabsTrigger>
         </TabsList>
 
@@ -288,6 +293,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   className="w-full border-gray-700 hover:bg-gray-800 hover:text-white"
+                  onClick={() => router.push("/reports")}
                 >
                   View All Scans
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -367,7 +373,12 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button className="w-full bg-[#0080ff] hover:bg-[#0060cc] justify-start">
+                <Button
+                  className="w-full bg-[#0080ff] hover:bg-[#0060cc] justify-start"
+                  onClick={() => {
+                    router.push("/scans");
+                  }}
+                >
                   <Play className="mr-2 h-4 w-4" />
                   Start New Scan
                 </Button>
