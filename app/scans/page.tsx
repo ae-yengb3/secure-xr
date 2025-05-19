@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
-import { startScan } from "../../actions/scan-actions"
+import { startScan } from "../actions/scan-actions"
 
 export default function ScanPage() {
   const router = useRouter()

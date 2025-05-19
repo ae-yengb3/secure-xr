@@ -82,9 +82,9 @@ export default function DashboardLayout({
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/scans", label: "Scans", icon: Scan },
-    { href: "/dashboard/reports", label: "Reports", icon: FileBarChart },
-    { href: "/dashboard/alerts", label: "Alerts", icon: Bell },
+    { href: "/scans", label: "Scans", icon: Scan },
+    { href: "/reports", label: "Reports", icon: FileBarChart },
+    { href: "/alerts", label: "Alerts", icon: Bell },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 

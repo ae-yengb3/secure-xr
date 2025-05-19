@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
-import { getAllScanResults } from "../../actions/scan-actions"
+import { getAllScanResults } from "../actions/scan-actions"
 import type { ScanResult } from "@/lib/scan-engine"
 
 export default function ResultsPage() {
