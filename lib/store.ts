@@ -1,11 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userSlice from './features/userSlice'
+import userReducer from './features/userSlice'
+import scanReducer from './features/scanSlice'
+
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
-            user: userSlice
-        }
+            user: userReducer,
+            scan: scanReducer
+        },
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+            serializableCheck: false,
+        }),
     })
 }
 

@@ -5,12 +5,28 @@ const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 export const getScans = createAsyncThunk(
     "scan/getScan",
     async () => {
-        const response = await fetch(`${serverUrl}/secure/scans`, {
+        const response = await fetch(`${serverUrl}/secure/scans/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
+        });
+        const data = await response.json();
+        return data;
+    }
+);
+
+export const startScan = createAsyncThunk(
+    "scan/startScan",
+    async (scanData: any) => {
+        const response = await fetch(`${serverUrl}/secure/start/scan/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(scanData),
         });
         const data = await response.json();
         return data;

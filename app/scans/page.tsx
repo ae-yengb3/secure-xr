@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Shield,
   Search,
@@ -15,32 +15,46 @@ import {
   Globe,
   Package,
   AlertTriangle,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
-import { useToast } from "@/components/ui/use-toast"
-import { startScan } from "../actions/scan-actions"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
+import { getScans, startScan } from "@/lib/utils/scan";
+import { useAppDispatch, useAppSelector } from "@/lib/hook";
 
 export default function ScanPage() {
-  const router = useRouter()
-  const { toast } = useToast()
+  const router = useRouter();
+  const { toast } = useToast();
+  const dispatch = useAppDispatch();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scanType, setScanType] = useState("Passive")
-  const [targetType, setTargetType] = useState("url")
-  const [targetUrl, setTargetUrl] = useState("")
-  const [scanDepth, setScanDepth] = useState(50)
-  const [isScanning, setIsScanning] = useState(false)
-  const [scanProgress, setScanProgress] = useState(0)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scanType, setScanType] = useState("Passive");
+  const [targetType, setTargetType] = useState("url");
+  const [targetUrl, setTargetUrl] = useState("");
+  const [scanDepth, setScanDepth] = useState(50);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
   const [selectedModules, setSelectedModules] = useState({
     portScan: true,
     vulnDetection: true,
@@ -48,91 +62,65 @@ export default function ScanPage() {
     sslCheck: true,
     dnsEnum: false,
     dirBruteforce: false,
-  })
-  const [scanTimeout, setScanTimeout] = useState("30")
+  });
+
+  const scans = useAppSelector((state) => state.scan.scans);
+  const { user } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user]);
 
   const handleModuleToggle = (module: string) => {
     setSelectedModules((prev) => ({
       ...prev,
       [module]: !prev[module as keyof typeof prev],
-    }))
-  }
+    }));
+  };
 
-  const handleStartScan = async () => {
-    if (!targetUrl.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a target URL",
-        variant: "destructive",
-      })
-      return
-    }
+  const handleStartScan = () => {
+    const data = {
+      scanType,
+      targetUrl,
+    };
 
-    setIsScanning(true)
-    setScanProgress(0)
-
-    // Simulate scan progress
-    const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 95) {
-          clearInterval(interval)
-          return 95
-        }
-        return prev + Math.floor(Math.random() * 5) + 1
-      })
-    }, 500)
-
-    try {
-      // Call our server action to start the scan
-      const response = await startScan(
-        targetUrl,
-        scanType as "Passive" | "Active" | "Hybrid",
-        selectedModules,
-        scanDepth,
-      )
-
-      if (response.success && response.result) {
-        clearInterval(interval)
-        setScanProgress(100)
-
-        setTimeout(() => {
-          toast({
-            title: "Scan completed",
-            description: `Found ${response.result?.vulnerabilities.length} vulnerabilities`,
-          })
-
-          // Navigate to results page
-          // router.push(`/results/${response.result.id}`)
-        }, 1000)
-      } else {
-        throw new Error(response.error || "Failed to start scan")
-      }
-    } catch (error) {
-      clearInterval(interval)
-      setIsScanning(false)
-
-      toast({
-        title: "Scan failed",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive",
-      })
-    }
-  }
+    dispatch(startScan(data));
+    setIsScanning(true);
+  };
 
   const handleCancelScan = () => {
-    setIsScanning(false)
-    setScanProgress(0)
+    setIsScanning(false);
+    setScanProgress(0);
     toast({
       title: "Scan cancelled",
       description: "The scan has been cancelled",
-    })
-  }
+    });
+  };
+
+  useEffect(() => {
+    dispatch(getScans());
+  }, []);
+
+  useEffect(() => {
+    if (scans) {
+      const latestScan = scans[scans.length - 1];
+
+      if (latestScan?.progress < 100) {
+        setIsScanning(true);
+        setScanProgress(latestScan.progress);
+      }
+    }
+  }, [scans]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
       >
         <div className="flex h-16 items-center border-b border-border/40 px-6">
           <Link href="/" className="flex items-center gap-2">
@@ -153,7 +141,7 @@ export default function ScanPage() {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-primary/10 text-primary"
           >
             <Search className="h-5 w-5" />
-            Scan
+            Scans
           </Link>
           <Link
             href="/results"
@@ -181,7 +169,11 @@ export default function ScanPage() {
               className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 w-10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {mobileMenuOpen ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Menu className="h-4 w-4" />
+              )}
               <span className="sr-only">Toggle Menu</span>
             </button>
 
@@ -204,7 +196,10 @@ export default function ScanPage() {
           <Card>
             <CardHeader>
               <CardTitle>Start a New Security Scan</CardTitle>
-              <CardDescription>Configure your scan settings to detect vulnerabilities in your target</CardDescription>
+              <CardDescription>
+                Configure your scan settings to detect vulnerabilities in your
+                target
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {isScanning ? (
@@ -214,7 +209,9 @@ export default function ScanPage() {
                       <Search className="h-8 w-8 text-primary animate-pulse" />
                     </div>
                     <h3 className="text-xl font-bold">Scanning in Progress</h3>
-                    <p className="text-muted-foreground">Please wait while we scan your target for vulnerabilities</p>
+                    <p className="text-muted-foreground">
+                      Please wait while we scan your target for vulnerabilities
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -279,7 +276,9 @@ export default function ScanPage() {
                   <TabsContent value="target" className="space-y-6">
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Target Type</h3>
+                        <h3 className="text-lg font-medium mb-2">
+                          Target Type
+                        </h3>
                         <RadioGroup
                           defaultValue="url"
                           value={targetType}
@@ -288,21 +287,20 @@ export default function ScanPage() {
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="url" id="url" />
-                            <Label htmlFor="url" className="flex items-center gap-2 cursor-pointer">
+                            <Label
+                              htmlFor="url"
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
                               <Globe className="h-5 w-5" />
                               URL / Domain
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="package" id="package" />
-                            <Label htmlFor="package" className="flex items-center gap-2 cursor-pointer">
-                              <Package className="h-5 w-5" />
-                              Software Package
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
                             <RadioGroupItem value="bulk" id="bulk" />
-                            <Label htmlFor="bulk" className="flex items-center gap-2 cursor-pointer">
+                            <Label
+                              htmlFor="bulk"
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
                               <FileText className="h-5 w-5" />
                               Bulk Scan (CSV)
                             </Label>
@@ -323,7 +321,8 @@ export default function ScanPage() {
                               onChange={(e) => setTargetUrl(e.target.value)}
                             />
                             <p className="text-sm text-muted-foreground">
-                              Enter a full URL (https://example.com/path) or domain name (example.com)
+                              Enter a full URL (https://example.com/path) or
+                              domain name (example.com)
                             </p>
                           </div>
                         </div>
@@ -334,14 +333,21 @@ export default function ScanPage() {
                           <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
                             <div className="flex flex-col items-center justify-center gap-2">
                               <Upload className="h-8 w-8 text-muted-foreground" />
-                              <h3 className="font-medium">Upload Software Package</h3>
+                              <h3 className="font-medium">
+                                Upload Software Package
+                              </h3>
                               <p className="text-sm text-muted-foreground">
                                 Drag and drop your file here, or click to browse
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                Supported formats: ZIP, JAR, WAR, EXE, APK, PY, JS
+                                Supported formats: ZIP, JAR, WAR, EXE, APK, PY,
+                                JS
                               </p>
-                              <Button variant="outline" size="sm" className="mt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-2"
+                              >
                                 Browse Files
                               </Button>
                             </div>
@@ -356,16 +362,21 @@ export default function ScanPage() {
                               <Upload className="h-8 w-8 text-muted-foreground" />
                               <h3 className="font-medium">Upload CSV File</h3>
                               <p className="text-sm text-muted-foreground">
-                                Upload a CSV file with one URL or domain per line
+                                Upload a CSV file with one URL or domain per
+                                line
                               </p>
-                              <Button variant="outline" size="sm" className="mt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-2"
+                              >
                                 Browse Files
                               </Button>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
                             <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                            <p className="text-sm">Bulk scanning may take longer and consume multiple scan credits</p>
+                            <p className="text-sm">This is not yet available</p>
                           </div>
                         </div>
                       )}
@@ -390,7 +401,9 @@ export default function ScanPage() {
                             </div>
                             <div className="text-center">
                               <h4 className="font-medium">Passive Scan</h4>
-                              <p className="text-xs text-muted-foreground mt-1">Quick discovery, no target impact</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Quick discovery, no target impact
+                              </p>
                             </div>
                           </button>
 
@@ -407,7 +420,9 @@ export default function ScanPage() {
                             </div>
                             <div className="text-center">
                               <h4 className="font-medium">Active Scan</h4>
-                              <p className="text-xs text-muted-foreground mt-1">Deep inspection; may trigger alerts</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Deep inspection; may trigger alerts
+                              </p>
                             </div>
                           </button>
 
@@ -424,7 +439,9 @@ export default function ScanPage() {
                             </div>
                             <div className="text-center">
                               <h4 className="font-medium">Both (Hybrid)</h4>
-                              <p className="text-xs text-muted-foreground mt-1">Comprehensive (slower but thorough)</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Comprehensive (slower but thorough)
+                              </p>
                             </div>
                           </button>
                         </div>
@@ -433,8 +450,8 @@ export default function ScanPage() {
                           <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
                             <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                             <p className="text-sm">
-                              Active scans may affect network performance and trigger security alerts on the target
-                              system.
+                              Active scans may affect network performance and
+                              trigger security alerts on the target system.
                             </p>
                           </div>
                         ) : null}
@@ -442,30 +459,7 @@ export default function ScanPage() {
 
                       <Separator />
 
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-medium">Scan Depth</h3>
-                          <span className="text-sm font-medium">{scanDepth}%</span>
-                        </div>
-                        <Slider
-                          value={[scanDepth]}
-                          min={10}
-                          max={100}
-                          step={10}
-                          onValueChange={(value) => setScanDepth(value[0])}
-                        />
-                        <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>Basic</span>
-                          <span>Thorough</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Higher scan depth provides more thorough analysis but takes longer to complete
-                        </p>
-                      </div>
-
-                      <Separator />
-
-                      <div className="space-y-4">
+                      {/* <div className="space-y-4">
                         <h3 className="text-lg font-medium">Scan Timeout</h3>
                         <Select value={scanTimeout} onValueChange={setScanTimeout}>
                           <SelectTrigger>
@@ -482,11 +476,11 @@ export default function ScanPage() {
                         <p className="text-sm text-muted-foreground">
                           Maximum time the scan will run before automatically stopping
                         </p>
-                      </div>
+                      </div> */}
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="modules" className="space-y-6">
+                  {/* <TabsContent value="modules" className="space-y-6">
                     <div className="space-y-6">
                       <div className="space-y-4">
                         <h3 className="text-lg font-medium">Scan Modules</h3>
@@ -597,15 +591,15 @@ export default function ScanPage() {
                         </div>
                       </div>
                     </div>
-                  </TabsContent>
+                  </TabsContent> */}
 
                   <div className="flex justify-end space-x-4 pt-4">
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setTargetUrl("")
-                        setScanType("Passive")
-                        setScanDepth(50)
+                        setTargetUrl("");
+                        setScanType("Passive");
+                        setScanDepth(50);
                         setSelectedModules({
                           portScan: true,
                           vulnDetection: true,
@@ -613,7 +607,7 @@ export default function ScanPage() {
                           sslCheck: true,
                           dnsEnum: false,
                           dirBruteforce: false,
-                        })
+                        });
                       }}
                     >
                       Reset
@@ -627,5 +621,5 @@ export default function ScanPage() {
         </main>
       </div>
     </div>
-  )
+  );
 }

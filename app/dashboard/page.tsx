@@ -105,7 +105,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-gray-400">
-            Welcome back, {user?.fullname.split(" ")[0]}. Here's what's
+            Welcome back, {user?.fullname?.split(" ")[0]}. Here's what's
             happening with your network.
           </p>
         </div>
