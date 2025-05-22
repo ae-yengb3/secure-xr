@@ -45,7 +45,6 @@ export const scanSlice = createSlice({
             })
             .addCase(startScan.fulfilled, (state, action) => {
                 state.loading = false
-                state.scans = action.payload
             })
             .addCase(startScan.rejected, (state, action) => {
                 state.loading = false
