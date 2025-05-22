@@ -1,15 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { getScans, startScan } from "../utils/scan"
+import { getReports, getScans, startScan } from "../utils/scan"
 
 export type ScanState = {
     scans: any
     loading: boolean
-    error: any
+    error: any,
+    reports: any,
+    extra: any
 }
 const initialState: ScanState = {
     scans: null,
     loading: false,
     error: null,
+    reports: null,
+    extra: null
 }
 
 export const scanSlice = createSlice({
@@ -44,6 +48,18 @@ export const scanSlice = createSlice({
                 state.scans = action.payload
             })
             .addCase(startScan.rejected, (state, action) => {
+                state.loading = false
+            })
+            .addCase(getReports.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(getReports.fulfilled, (state, action) => {
+                state.loading = false
+                state.reports = action.payload.reports
+                state.extra = action.payload.extra
+            })
+            .addCase(getReports.rejected, (state, action) => {
                 state.loading = false
             })
     },

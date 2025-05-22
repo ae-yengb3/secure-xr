@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   Shield,
   AlertTriangle,
@@ -25,8 +25,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DonutChart } from "@/components/ui/chart";
 import { useAppSelector, useAppDispatch } from "@/lib/hook";
 import { useRouter } from "next/navigation";
-import { getMe } from "@/lib/utils/user";
-import { getScans } from "@/lib/utils/scan";
+import { getMe, loginUser } from "@/lib/utils/user";
+import { getReports, getScans } from "@/lib/utils/scan";
+import { logout } from "@/lib/features/userSlice";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -41,8 +42,8 @@ export default function DashboardPage() {
 
   const [liveScans, setLiveScans] = useState([]);
 
-  const { user } = useAppSelector((state) => state.user);
-  const { scans } = useAppSelector((state) => state.scan);
+  const { user, token } = useAppSelector((state) => state.user);
+  const { scans, extra, reports } = useAppSelector((state) => state.scan);
 
   useEffect(() => {
     if (!user) {
@@ -51,8 +52,18 @@ export default function DashboardPage() {
   }, [user]);
 
   useEffect(() => {
+    if (!token) {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        dispatch(getMe());
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     dispatch(getMe());
     dispatch(getScans());
+    dispatch(getReports());
   }, []);
 
   useEffect(() => {
@@ -62,7 +73,8 @@ export default function DashboardPage() {
       completed_scans: scans?.filter((scan) => scan.progress === 100).length,
       // @ts-ignore
       activeScans: scans?.filter((scan) => scan.progress < 100).length,
-      vulnerabilities: 0,
+      vulnerabilities:
+        extra?.critial + extra?.high + extra?.medium + extra?.low,
     });
 
     // @ts-ignore
@@ -71,35 +83,10 @@ export default function DashboardPage() {
 
   // Sample data for charts
   const vulnerabilityData = [
-    { name: "Critical", value: 12, color: "#ff3333" },
-    { name: "High", value: 24, color: "#ff9933" },
-    { name: "Medium", value: 36, color: "#ffcc33" },
-    { name: "Low", value: 28, color: "#0080ff" },
-  ];
-
-  // Sample data for scans
-  const activeScans = [
-    {
-      id: 1,
-      target: "192.168.1.0/24",
-      status: "In Progress",
-      progress: 65,
-      startTime: "10:30 AM",
-    },
-    {
-      id: 2,
-      target: "10.0.0.1",
-      status: "Starting",
-      progress: 5,
-      startTime: "10:45 AM",
-    },
-    {
-      id: 3,
-      target: "web-server.local",
-      status: "In Progress",
-      progress: 32,
-      startTime: "10:15 AM",
-    },
+    { name: "Critical", value: extra?.critial, color: "#ff3333" },
+    { name: "High", value: extra?.high, color: "#ff9933" },
+    { name: "Medium", value: extra?.medium, color: "#ffcc33" },
+    { name: "Low", value: extra?.low, color: "#0080ff" },
   ];
 
   // Sample data for alerts
@@ -249,7 +236,7 @@ export default function DashboardPage() {
                 <div className="flex items-center">
                   <AlertTriangle className="h-6 w-6 text-[#ff3333] mr-2" />
                   <div className="text-2xl font-bold">
-                    {dashboardData.vulnerabilities}
+                    {dashboardData?.vulnerabilities || 0}
                   </div>
                 </div>
                 {/* <p className="text-xs text-gray-400 mt-1">12 critical issues</p> */}
@@ -282,11 +269,11 @@ export default function DashboardPage() {
               <CardFooter className="flex justify-between text-sm text-gray-400">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#ff3333] mr-2"></div>
-                  <span>Critical: 12</span>
+                  <span>Critical: {extra?.critical || 0}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#ff9933] mr-2"></div>
-                  <span>High: 24</span>
+                  <span>High: {extra?.high || 0}</span>
                 </div>
               </CardFooter>
             </Card>
@@ -321,7 +308,7 @@ export default function DashboardPage() {
                         {/* @ts-ignore */}
                         <span>Progress: {scan.progress}%</span>
                         {/* @ts-ignore */}
-                        <span>Started: {scan.startTime}</span>
+                        <span>Started: {scan.start_time}</span>
                       </div>
                       <Progress
                         // @ts-ignore
@@ -478,33 +465,34 @@ export default function DashboardPage() {
                     </thead>
                     <tbody>
                       {/* @ts-ignore */}
-                      {scans?.map((scan, i) => (
-                        <tr
-                          key={i}
-                          className="border-b border-gray-800 hover:bg-[#212121]"
-                        >
-                          <td className="px-4 py-3">{scan?.url}</td>
-                          <td className="px-4 py-3">{"Active"}</td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                scan?.progress === 100
-                                  ? "bg-green-500/20 text-green-500"
-                                  : scan.status === "In Progress"
-                                  ? "bg-[#0080ff]/20 text-[#0080ff]"
-                                  : "bg-yellow-500/20 text-yellow-500"
-                              }`}
-                            >
-                              {scan?.progress === 100
-                                ? "Completed"
-                                : "In Progress"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {new Date(scan?.start_time).toUTCString()}
-                          </td>
-                          <td className="px-4 py-3">
-                            {/* {scan.issues !== "-" && (
+                      {Array.isArray(scans) &&
+                        scans?.map((scan, i) => (
+                          <tr
+                            key={i}
+                            className="border-b border-gray-800 hover:bg-[#212121]"
+                          >
+                            <td className="px-4 py-3">{scan?.url}</td>
+                            <td className="px-4 py-3">{"Active"}</td>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  scan?.progress === 100
+                                    ? "bg-green-500/20 text-green-500"
+                                    : scan.status === "In Progress"
+                                    ? "bg-[#0080ff]/20 text-[#0080ff]"
+                                    : "bg-yellow-500/20 text-yellow-500"
+                                }`}
+                              >
+                                {scan?.progress === 100
+                                  ? "Completed"
+                                  : "In Progress"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              {new Date(scan?.start_time).toUTCString()}
+                            </td>
+                            <td className="px-4 py-3">
+                              {/* {scan.issues !== "-" && (
                               <span
                                 // className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 //   Number.parseInt(scan.issues) > 5
@@ -519,10 +507,10 @@ export default function DashboardPage() {
                                 -
                               </span>
                             )} */}
-                            {scan.issues === "-" && "-"}
-                          </td>
-                        </tr>
-                      ))}
+                              {scan.issues === "-" && "-"}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>

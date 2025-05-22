@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Shield,
   Search,
@@ -18,139 +18,159 @@ import {
   AlertTriangle,
   CheckCircle,
   Activity,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Separator } from "@/components/ui/separator"
-import { getAllScanResults } from "../actions/scan-actions"
-import type { ScanResult } from "@/lib/scan-engine"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { getAllScanResults } from "../actions/scan-actions";
+import { useAppDispatch, useAppSelector } from "@/lib/hook";
+import type { ScanResult } from "@/lib/scan-engine";
+import { getReports } from "@/lib/utils/scan";
 
 export default function ResultsPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [sortColumn, setSortColumn] = useState("date")
-  const [sortDirection, setSortDirection] = useState("desc")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [riskFilter, setRiskFilter] = useState("all")
-  const [scanResults, setScanResults] = useState<ScanResult[]>([])
-  const [loading, setLoading] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sortColumn, setSortColumn] = useState("date");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [riskFilter, setRiskFilter] = useState("all");
+  const [scanResults, setScanResults] = useState<ScanResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const { extra, reports, scans } = useAppSelector((state) => state.scan);
 
   useEffect(() => {
-    async function fetchScanResults() {
-      try {
-        const results = await getAllScanResults()
-        setScanResults(results)
-      } catch (error) {
-        console.error("Error fetching scan results:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchScanResults()
-  }, [])
+    dispatch(getReports());
+  }, []);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortColumn(column)
-      setSortDirection("asc")
+      setSortColumn(column);
+      setSortDirection("asc");
     }
-  }
+  };
 
   const getSortIcon = (column: string) => {
-    if (sortColumn !== column) return null
-    return sortDirection === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
-  }
+    if (sortColumn !== column) return null;
+    return sortDirection === "asc" ? (
+      <ChevronUp className="h-4 w-4" />
+    ) : (
+      <ChevronDown className="h-4 w-4" />
+    );
+  };
 
   const getRiskBadge = (risk: string | null) => {
-    if (!risk) return null
+    if (!risk) return null;
 
     const variants: Record<string, string> = {
       Critical: "bg-red-500/10 text-red-500 hover:bg-red-500/20",
       High: "bg-orange-500/10 text-orange-500 hover:bg-orange-500/20",
       Medium: "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20",
       Low: "bg-green-500/10 text-green-500 hover:bg-green-500/20",
-    }
+    };
 
     return (
       <Badge variant="outline" className={variants[risk] || ""}>
         {risk}
       </Badge>
-    )
-  }
+    );
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, string> = {
       Completed: "bg-green-500/10 text-green-500 hover:bg-green-500/20",
       "In Progress": "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20",
       Failed: "bg-red-500/10 text-red-500 hover:bg-red-500/20",
-    }
+    };
 
     return (
       <Badge variant="outline" className={variants[status] || ""}>
         {status}
       </Badge>
-    )
-  }
+    );
+  };
 
   const getRiskLevel = (vulnerabilities: any[]) => {
-    if (!vulnerabilities || vulnerabilities.length === 0) return null
+    if (!vulnerabilities || vulnerabilities.length === 0) return null;
 
-    if (vulnerabilities.some((v) => v.severity === "Critical")) return "Critical"
-    if (vulnerabilities.some((v) => v.severity === "High")) return "High"
-    if (vulnerabilities.some((v) => v.severity === "Medium")) return "Medium"
-    return "Low"
-  }
+    if (vulnerabilities.some((v) => v.severity === "Critical"))
+      return "Critical";
+    if (vulnerabilities.some((v) => v.severity === "High")) return "High";
+    if (vulnerabilities.some((v) => v.severity === "Medium")) return "Medium";
+    return "Low";
+  };
 
   // Filter and sort results
   const filteredResults = scanResults
     .filter((result) => {
       // Search filter
-      if (searchQuery && !result.target.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false
+      if (
+        searchQuery &&
+        !result.target.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
       }
 
       // Status filter
       if (statusFilter !== "all" && result.status !== statusFilter) {
-        return false
+        return false;
       }
 
       // Risk filter
       if (riskFilter !== "all") {
-        const riskLevel = getRiskLevel(result.vulnerabilities)
+        const riskLevel = getRiskLevel(result.vulnerabilities);
         if (riskLevel !== riskFilter) {
-          return false
+          return false;
         }
       }
 
-      return true
+      return true;
     })
     .sort((a, b) => {
       // Sort logic
       if (sortColumn === "target") {
-        return sortDirection === "asc" ? a.target.localeCompare(b.target) : b.target.localeCompare(a.target)
+        return sortDirection === "asc"
+          ? a.target.localeCompare(b.target)
+          : b.target.localeCompare(a.target);
       }
 
       if (sortColumn === "date") {
         return sortDirection === "asc"
           ? new Date(a.endTime).getTime() - new Date(b.endTime).getTime()
-          : new Date(b.endTime).getTime() - new Date(a.endTime).getTime()
+          : new Date(b.endTime).getTime() - new Date(a.endTime).getTime();
       }
 
       if (sortColumn === "vulnerabilities") {
-        const aVal = a.vulnerabilities?.length ?? 0
-        const bVal = b.vulnerabilities?.length ?? 0
-        return sortDirection === "asc" ? aVal - bVal : bVal - aVal
+        const aVal = a.vulnerabilities?.length ?? 0;
+        const bVal = b.vulnerabilities?.length ?? 0;
+        return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
       }
 
-      return 0
-    })
+      return 0;
+    });
 
   if (loading) {
     return (
@@ -162,14 +182,16 @@ export default function ResultsPage() {
           <p className="text-lg font-medium">Loading scan results...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
       >
         <div className="flex h-16 items-center border-b border-border/40 px-6">
           <Link href="/" className="flex items-center gap-2">
@@ -218,7 +240,11 @@ export default function ResultsPage() {
               className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 w-10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {mobileMenuOpen ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Menu className="h-4 w-4" />
+              )}
               <span className="sr-only">Toggle Menu</span>
             </button>
 
@@ -244,7 +270,9 @@ export default function ResultsPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <CardTitle>Scan Results</CardTitle>
-                  <CardDescription>View and analyze your security scan results</CardDescription>
+                  <CardDescription>
+                    View and analyze your security scan results
+                  </CardDescription>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="relative">
@@ -267,14 +295,19 @@ export default function ResultsPage() {
                     <DropdownMenuContent align="end" className="w-[200px]">
                       <div className="p-2">
                         <p className="text-sm font-medium mb-2">Status</p>
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <Select
+                          value={statusFilter}
+                          onValueChange={setStatusFilter}
+                        >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All Statuses</SelectItem>
                             <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="In Progress">
+                              In Progress
+                            </SelectItem>
                             <SelectItem value="Failed">Failed</SelectItem>
                           </SelectContent>
                         </Select>
@@ -282,7 +315,10 @@ export default function ResultsPage() {
                       <Separator className="my-2" />
                       <div className="p-2">
                         <p className="text-sm font-medium mb-2">Risk Level</p>
-                        <Select value={riskFilter} onValueChange={setRiskFilter}>
+                        <Select
+                          value={riskFilter}
+                          onValueChange={setRiskFilter}
+                        >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select risk level" />
                           </SelectTrigger>
@@ -309,15 +345,21 @@ export default function ResultsPage() {
               <div className="mb-6 p-4 rounded-lg bg-card border border-border/50">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                   <div className="col-span-1 sm:col-span-2 lg:col-span-1">
-                    <div className="text-sm text-muted-foreground">Total Scans</div>
-                    <div className="text-2xl font-bold">{filteredResults.length}</div>
+                    <div className="text-sm text-muted-foreground">
+                      Total Scans
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {scans?.length || 0}
+                    </div>
                   </div>
 
                   <div>
-                    <div className="text-sm text-muted-foreground">Critical</div>
+                    <div className="text-sm text-muted-foreground">
+                      Critical
+                    </div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-red-500">
-                        {filteredResults.filter((r) => getRiskLevel(r.vulnerabilities) === "Critical").length}
+                        {extra?.critial || 0}
                       </div>
                     </div>
                   </div>
@@ -326,7 +368,7 @@ export default function ResultsPage() {
                     <div className="text-sm text-muted-foreground">High</div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-orange-500">
-                        {filteredResults.filter((r) => getRiskLevel(r.vulnerabilities) === "High").length}
+                        {extra?.high || 0}
                       </div>
                     </div>
                   </div>
@@ -335,7 +377,7 @@ export default function ResultsPage() {
                     <div className="text-sm text-muted-foreground">Medium</div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-yellow-500">
-                        {filteredResults.filter((r) => getRiskLevel(r.vulnerabilities) === "Medium").length}
+                        {extra?.medium || 0}
                       </div>
                     </div>
                   </div>
@@ -344,7 +386,7 @@ export default function ResultsPage() {
                     <div className="text-sm text-muted-foreground">Low</div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-green-500">
-                        {filteredResults.filter((r) => getRiskLevel(r.vulnerabilities) === "Low").length}
+                        {extra?.low || 0}
                       </div>
                     </div>
                   </div>
@@ -354,7 +396,10 @@ export default function ResultsPage() {
               {/* Results Table */}
               <div className="rounded-md border">
                 <div className="grid grid-cols-7 gap-4 p-4 font-medium border-b">
-                  <button className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("target")}>
+                  <button
+                    className="flex items-center gap-1 cursor-pointer"
+                    onClick={() => handleSort("target")}
+                  >
                     Target {getSortIcon("target")}
                   </button>
                   <div>Status</div>
@@ -367,62 +412,88 @@ export default function ResultsPage() {
                   <div>Risk Level</div>
                   <div>Scan Type</div>
                   <div>Duration</div>
-                  <button className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("date")}>
+                  <button
+                    className="flex items-center gap-1 cursor-pointer"
+                    onClick={() => handleSort("date")}
+                  >
                     Date {getSortIcon("date")}
                   </button>
                 </div>
 
-                {filteredResults.length === 0 ? (
+                {reports?.length === 0 ? (
                   <div className="p-8 text-center">
-                    <p className="text-muted-foreground">No scan results match your filters</p>
+                    <p className="text-muted-foreground">
+                      No scan results match your filters
+                    </p>
                   </div>
                 ) : (
-                  filteredResults.map((result) => (
+                  // @ts-ignore
+                  reports?.map((report) => (
                     <div
-                      key={result.id}
+                      key={report.id}
                       className="grid grid-cols-7 gap-4 p-4 border-b last:border-0 items-center hover:bg-muted/50 transition-colors"
                     >
                       <div className="font-medium">
-                        <Link href={`/results/${result.id}`} className="hover:underline flex items-center gap-1">
-                          {result.target}
+                        <Link
+                          href={`/results/${report.id}`}
+                          className="hover:underline flex items-center gap-1"
+                        >
+                          {report.url}
                           <ExternalLink className="h-3 w-3" />
                         </Link>
                       </div>
-                      <div>{getStatusBadge(result.status)}</div>
+                      <div>{getStatusBadge("Completed")}</div>
                       <div>
-                        {result.vulnerabilities?.length ? (
+                        {report?.vulnerabilities > 0 ? (
                           <div className="flex items-center gap-1">
-                            {result.vulnerabilities.length > 0 ? (
+                            {report.vulnerabilities > 0 ? (
                               <AlertTriangle
                                 className={`h-3 w-3 ${
-                                  getRiskLevel(result.vulnerabilities) === "Critical"
+                                  report?.critial > 0
                                     ? "text-red-500"
-                                    : getRiskLevel(result.vulnerabilities) === "High"
-                                      ? "text-orange-500"
-                                      : getRiskLevel(result.vulnerabilities) === "Medium"
-                                        ? "text-yellow-500"
-                                        : "text-green-500"
+                                    : report?.high > 0
+                                    ? "text-orange-500"
+                                    : report?.medium > 0
+                                    ? "text-yellow-500"
+                                    : "text-green-500"
                                 }`}
                               />
                             ) : (
                               <CheckCircle className="h-3 w-3 text-green-500" />
                             )}
-                            <span>{result.vulnerabilities.length}</span>
+                            <span>{report?.vulnerabilities}</span>
                           </div>
                         ) : (
                           <div>-</div>
                         )}
                       </div>
-                      <div>{getRiskBadge(getRiskLevel(result.vulnerabilities))}</div>
-                      <div className="text-muted-foreground">{result.scanType}</div>
-                      <div className="text-muted-foreground">{result.duration}</div>
+                      <div>
+                        {report?.critial > 0
+                          ? "Critical"
+                          : report?.high > 0
+                          ? "High"
+                          : report?.medium > 0
+                          ? "Medium"
+                          : "Low"}
+                      </div>
+                      <div className="text-muted-foreground">{"Active"}</div>
+                      <div className="text-muted-foreground">
+                        {/* {result.duration} */}
+                        {"30 minutes"}
+                      </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{new Date(result.endTime).toLocaleDateString()}</span>
-                        {result.status === "Completed" && (
-                          <Button variant="ghost" size="icon" title="Download Report">
+                        <span className="text-muted-foreground">
+                          {new Date(report.start_time).toLocaleDateString()}
+                        </span>
+                        {/* {result.status === "Completed" && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Download Report"
+                          >
                             <Download className="h-4 w-4" />
                           </Button>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   ))
@@ -433,5 +504,5 @@ export default function ResultsPage() {
         </main>
       </div>
     </div>
-  )
+  );
 }

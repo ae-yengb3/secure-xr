@@ -25,6 +25,10 @@ export const getMe = createAsyncThunk('user/getMe', async () => {
             Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
     });
+
+    if (response.status === 401) {
+        throw new Error('Unauthorized');
+    }
     const data = await response.json();
     return data;
 });

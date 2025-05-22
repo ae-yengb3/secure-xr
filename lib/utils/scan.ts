@@ -12,6 +12,9 @@ export const getScans = createAsyncThunk(
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
+        if (response.status != 200) {
+            throw new Error("Failed to get scans");
+        }
         const data = await response.json();
         return data;
     }
@@ -28,6 +31,28 @@ export const startScan = createAsyncThunk(
             },
             body: JSON.stringify(scanData),
         });
+
+        if (response.status !== 200) {
+            throw new Error("Failed to start scan");
+        }
+        const data = await response.json();
+        return data;
+    }
+);
+
+export const getReports = createAsyncThunk(
+    "scan/reports",
+    async () => {
+        const response = await fetch(`${serverUrl}/secure/reports/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        if (response.status != 200) {
+            throw new Error("Failed to get reports");
+        }
         const data = await response.json();
         return data;
     }
