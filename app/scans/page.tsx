@@ -42,6 +42,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { getScans, startScan } from "@/lib/utils/scan";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
+import { getMe } from "@/lib/utils/user";
 
 export default function ScanPage() {
   const router = useRouter();
@@ -100,11 +101,12 @@ export default function ScanPage() {
   };
 
   useEffect(() => {
+    dispatch(getMe());
     dispatch(getScans());
   }, []);
 
   useEffect(() => {
-    if (scans) {
+    if (scans && scans.length > 0) {
       const latestScan = scans[scans.length - 1];
 
       if (latestScan?.progress < 100) {

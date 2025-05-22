@@ -23,20 +23,51 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DonutChart } from "@/components/ui/chart";
-import { useAppSelector } from "@/lib/hook";
+import { useAppSelector, useAppDispatch } from "@/lib/hook";
 import { useRouter } from "next/navigation";
+import { getMe } from "@/lib/utils/user";
+import { getScans } from "@/lib/utils/scan";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [dashboardData, setDashboardData] = useState({
+    total_scans: 0,
+    completed_scans: 0,
+    activeScans: 0,
+    vulnerabilities: 0,
+  });
+
+  const [liveScans, setLiveScans] = useState([]);
 
   const { user } = useAppSelector((state) => state.user);
+  const { scans } = useAppSelector((state) => state.scan);
 
   useEffect(() => {
     if (!user) {
       router.push("/login");
     }
   }, [user]);
+
+  useEffect(() => {
+    dispatch(getMe());
+    dispatch(getScans());
+  }, []);
+
+  useEffect(() => {
+    setDashboardData({
+      total_scans: scans?.length,
+      // @ts-ignore
+      completed_scans: scans?.filter((scan) => scan.progress === 100).length,
+      // @ts-ignore
+      activeScans: scans?.filter((scan) => scan.progress < 100).length,
+      vulnerabilities: 0,
+    });
+
+    // @ts-ignore
+    setLiveScans(scans?.filter((scan) => scan.progress < 100));
+  }, [scans]);
 
   // Sample data for charts
   const vulnerabilityData = [
@@ -160,11 +191,13 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="flex items-center">
                   <Shield className="h-6 w-6 text-[#0080ff] mr-2" />
-                  <div className="text-2xl font-bold">248</div>
+                  <div className="text-2xl font-bold">
+                    {dashboardData.total_scans}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
+                {/* <p className="text-xs text-gray-400 mt-1">
                   +12% from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
 
@@ -177,11 +210,13 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="flex items-center">
                   <CheckCircle className="h-6 w-6 text-green-500 mr-2" />
-                  <div className="text-2xl font-bold">245</div>
+                  <div className="text-2xl font-bold">
+                    {dashboardData.completed_scans}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
+                {/* <p className="text-xs text-gray-400 mt-1">
                   98.8% completion rate
-                </p>
+                </p> */}
               </CardContent>
             </Card>
 
@@ -194,11 +229,13 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="flex items-center">
                   <Clock className="h-6 w-6 text-[#ffcc33] mr-2" />
-                  <div className="text-2xl font-bold">3</div>
+                  <div className="text-2xl font-bold">
+                    {dashboardData.activeScans}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
+                {/* <p className="text-xs text-gray-400 mt-1">
                   2 scheduled for today
-                </p>
+                </p> */}
               </CardContent>
             </Card>
 
@@ -211,9 +248,11 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="flex items-center">
                   <AlertTriangle className="h-6 w-6 text-[#ff3333] mr-2" />
-                  <div className="text-2xl font-bold">36</div>
+                  <div className="text-2xl font-bold">
+                    {dashboardData.vulnerabilities}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">12 critical issues</p>
+                {/* <p className="text-xs text-gray-400 mt-1">12 critical issues</p> */}
               </CardContent>
             </Card>
           </div>
@@ -262,25 +301,30 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {activeScans.map((scan) => (
-                    <div key={scan.id} className="bg-[#212121] p-3 rounded-lg">
+                  {liveScans?.map((scan) => (
+                    <div
+                      // @ts-ignore
+                      key={scan.scan_id}
+                      className="bg-[#212121] p-3 rounded-lg"
+                    >
                       <div className="flex justify-between items-center mb-2">
-                        <div className="font-medium">{scan.target}</div>
+                        {/* @ts-ignore */}
+                        <div className="font-medium">{scan.url}</div>
                         <div
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            scan.status === "In Progress"
-                              ? "bg-[#0080ff]/20 text-[#0080ff]"
-                              : "bg-yellow-500/20 text-yellow-500"
-                          }`}
+                          className={`text-xs px-2 py-1 rounded-full"bg-[#0080ff]/20 text-[#0080ff]"`}
                         >
-                          {scan.status}
+                          {/* @ts-ignore */}
+                          In Progress
                         </div>
                       </div>
                       <div className="flex justify-between items-center text-xs text-gray-400 mb-1">
+                        {/* @ts-ignore */}
                         <span>Progress: {scan.progress}%</span>
+                        {/* @ts-ignore */}
                         <span>Started: {scan.startTime}</span>
                       </div>
                       <Progress
+                        // @ts-ignore
                         value={scan.progress}
                         className="h-1.5 bg-gray-700"
                         indicatorClassName="bg-[#0080ff]"
@@ -293,7 +337,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   className="w-full border-gray-700 hover:bg-gray-800 hover:text-white"
-                  onClick={() => router.push("/reports")}
+                  onClick={() => router.push("/results")}
                 >
                   View All Scans
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -401,7 +445,7 @@ export default function DashboardPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="scans" className="space-y-6">
+        <TabsContent value="scans" className="space-y-6 w-[80vw]">
           <Card className="bg-[#1a1a1a] border-gray-800">
             <CardHeader>
               <CardTitle>Scan History</CardTitle>
@@ -428,91 +472,53 @@ export default function DashboardPage() {
                           Start Time
                         </th>
                         <th className="px-4 py-3 text-left font-medium">
-                          Duration
-                        </th>
-                        <th className="px-4 py-3 text-left font-medium">
                           Issues
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {[
-                        {
-                          target: "192.168.1.0/24",
-                          type: "Full Network",
-                          status: "In Progress",
-                          startTime: "Today, 10:30 AM",
-                          duration: "45m",
-                          issues: "8",
-                        },
-                        {
-                          target: "web-server.local",
-                          type: "Web Application",
-                          status: "In Progress",
-                          startTime: "Today, 10:15 AM",
-                          duration: "1h",
-                          issues: "3",
-                        },
-                        {
-                          target: "mail-server.local",
-                          type: "Service Scan",
-                          status: "Completed",
-                          startTime: "Yesterday, 2:30 PM",
-                          duration: "35m",
-                          issues: "2",
-                        },
-                        {
-                          target: "10.0.0.1",
-                          type: "Vulnerability Scan",
-                          status: "Starting",
-                          startTime: "Today, 10:45 AM",
-                          duration: "-",
-                          issues: "-",
-                        },
-                        {
-                          target: "database.local",
-                          type: "Service Scan",
-                          status: "Completed",
-                          startTime: "Yesterday, 11:20 AM",
-                          duration: "28m",
-                          issues: "0",
-                        },
-                      ].map((scan, i) => (
+                      {/* @ts-ignore */}
+                      {scans?.map((scan, i) => (
                         <tr
                           key={i}
                           className="border-b border-gray-800 hover:bg-[#212121]"
                         >
-                          <td className="px-4 py-3">{scan.target}</td>
-                          <td className="px-4 py-3">{scan.type}</td>
+                          <td className="px-4 py-3">{scan?.url}</td>
+                          <td className="px-4 py-3">{"Active"}</td>
                           <td className="px-4 py-3">
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                scan.status === "Completed"
+                                scan?.progress === 100
                                   ? "bg-green-500/20 text-green-500"
                                   : scan.status === "In Progress"
                                   ? "bg-[#0080ff]/20 text-[#0080ff]"
                                   : "bg-yellow-500/20 text-yellow-500"
                               }`}
                             >
-                              {scan.status}
+                              {scan?.progress === 100
+                                ? "Completed"
+                                : "In Progress"}
                             </span>
                           </td>
-                          <td className="px-4 py-3">{scan.startTime}</td>
-                          <td className="px-4 py-3">{scan.duration}</td>
                           <td className="px-4 py-3">
-                            {scan.issues !== "-" && (
+                            {new Date(scan?.start_time).toUTCString()}
+                          </td>
+                          <td className="px-4 py-3">
+                            {/* {scan.issues !== "-" && (
                               <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  Number.parseInt(scan.issues) > 5
-                                    ? "bg-[#ff3333]/20 text-[#ff3333]"
-                                    : Number.parseInt(scan.issues) > 0
-                                    ? "bg-[#ff9933]/20 text-[#ff9933]"
-                                    : "bg-green-500/20 text-green-500"
-                                }`}
+                                // className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                //   Number.parseInt(scan.issues) > 5
+                                //     ? "bg-[#ff3333]/20 text-[#ff3333]"
+                                //     : Number.parseInt(scan.issues) > 0
+                                //     ? "bg-[#ff9933]/20 text-[#ff9933]"
+                                //     : "bg-green-500/20 text-green-500"
+                                // }`}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#ff9933]/20"
                               >
-                                {scan.issues}
+
+                                -
                               </span>
-                            )}
+                            )} */}
                             {scan.issues === "-" && "-"}
                           </td>
                         </tr>
@@ -525,7 +531,7 @@ export default function DashboardPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="alerts" className="space-y-6">
+        <TabsContent value="alerts" className="space-y-6 w-[80vw]">
           <Card className="bg-[#1a1a1a] border-gray-800">
             <CardHeader>
               <CardTitle>Security Alerts</CardTitle>

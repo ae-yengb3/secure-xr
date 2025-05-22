@@ -30,7 +30,7 @@ export const scanSlice = createSlice({
             })
             .addCase(getScans.fulfilled, (state, action) => {
                 state.loading = false
-                state.scans = action.payload
+                state.scans = Array.isArray(action.payload) ? action.payload : []
             })
             .addCase(getScans.rejected, (state, action) => {
                 state.loading = false
