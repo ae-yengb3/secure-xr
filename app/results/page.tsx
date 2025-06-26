@@ -44,7 +44,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getAllScanResults } from "../actions/scan-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
-import type { ScanResult } from "@/lib/scan-engine";
+import type { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import { getReports } from "@/lib/utils/scan";
 
 export default function ResultsPage() {
@@ -54,7 +54,6 @@ export default function ResultsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [riskFilter, setRiskFilter] = useState("all");
-  const [scanResults, setScanResults] = useState<ScanResult[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -112,65 +111,6 @@ export default function ResultsPage() {
       </Badge>
     );
   };
-
-  const getRiskLevel = (vulnerabilities: any[]) => {
-    if (!vulnerabilities || vulnerabilities.length === 0) return null;
-
-    if (vulnerabilities.some((v) => v.severity === "Critical"))
-      return "Critical";
-    if (vulnerabilities.some((v) => v.severity === "High")) return "High";
-    if (vulnerabilities.some((v) => v.severity === "Medium")) return "Medium";
-    return "Low";
-  };
-
-  // Filter and sort results
-  const filteredResults = scanResults
-    .filter((result) => {
-      // Search filter
-      if (
-        searchQuery &&
-        !result.target.toLowerCase().includes(searchQuery.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Status filter
-      if (statusFilter !== "all" && result.status !== statusFilter) {
-        return false;
-      }
-
-      // Risk filter
-      if (riskFilter !== "all") {
-        const riskLevel = getRiskLevel(result.vulnerabilities);
-        if (riskLevel !== riskFilter) {
-          return false;
-        }
-      }
-
-      return true;
-    })
-    .sort((a, b) => {
-      // Sort logic
-      if (sortColumn === "target") {
-        return sortDirection === "asc"
-          ? a.target.localeCompare(b.target)
-          : b.target.localeCompare(a.target);
-      }
-
-      if (sortColumn === "date") {
-        return sortDirection === "asc"
-          ? new Date(a.endTime).getTime() - new Date(b.endTime).getTime()
-          : new Date(b.endTime).getTime() - new Date(a.endTime).getTime();
-      }
-
-      if (sortColumn === "vulnerabilities") {
-        const aVal = a.vulnerabilities?.length ?? 0;
-        const bVal = b.vulnerabilities?.length ?? 0;
-        return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
-      }
-
-      return 0;
-    });
 
   if (loading) {
     return (
@@ -359,7 +299,7 @@ export default function ResultsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-red-500">
-                        {extra?.critial || 0}
+                        {extra?.critical || 0}
                       </div>
                     </div>
                   </div>
@@ -449,7 +389,7 @@ export default function ResultsPage() {
                             {report.vulnerabilities > 0 ? (
                               <AlertTriangle
                                 className={`h-3 w-3 ${
-                                  report?.critial > 0
+                                  report?.critical > 0
                                     ? "text-red-500"
                                     : report?.high > 0
                                     ? "text-orange-500"
@@ -468,7 +408,7 @@ export default function ResultsPage() {
                         )}
                       </div>
                       <div>
-                        {report?.critial > 0
+                        {report?.critical > 0
                           ? "Critical"
                           : report?.high > 0
                           ? "High"

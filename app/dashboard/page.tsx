@@ -28,11 +28,14 @@ import { useRouter } from "next/navigation";
 import { getMe, loginUser } from "@/lib/utils/user";
 import { getReports, getScans } from "@/lib/utils/scan";
 import { logout } from "@/lib/features/userSlice";
+import { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [scanResults, setScanResults] = useState<VulnerabilityResult[]>([]);
+  const [lastReport, setLastReport] = useState<ScanResult | null>(null);
   const [dashboardData, setDashboardData] = useState({
     total_scans: 0,
     completed_scans: 0,
@@ -67,14 +70,24 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    if (reports) {
+      const lastReport = reports[reports.length - 1];
+
+      setScanResults([...lastReport.alerts].splice(0, 5));
+      setLastReport(lastReport);
+    }
+  }, [reports]);
+
+  useEffect(() => {
     setDashboardData({
       total_scans: scans?.length,
       // @ts-ignore
       completed_scans: scans?.filter((scan) => scan.progress === 100).length,
       // @ts-ignore
       activeScans: scans?.filter((scan) => scan.progress < 100).length,
-      vulnerabilities:
-        extra?.critial + extra?.high + extra?.medium + extra?.low,
+      vulnerabilities: extra
+        ? extra?.critical + extra?.high + extra?.medium + extra?.low
+        : 0,
     });
 
     // @ts-ignore
@@ -83,38 +96,10 @@ export default function DashboardPage() {
 
   // Sample data for charts
   const vulnerabilityData = [
-    { name: "Critical", value: extra?.critial, color: "#ff3333" },
+    { name: "Critical", value: extra?.critical, color: "#ff3333" },
     { name: "High", value: extra?.high, color: "#ff9933" },
     { name: "Medium", value: extra?.medium, color: "#ffcc33" },
     { name: "Low", value: extra?.low, color: "#0080ff" },
-  ];
-
-  // Sample data for alerts
-  const recentAlerts = [
-    {
-      id: 1,
-      message: "Open Port Detected on 192.168.1.1",
-      severity: "Critical",
-      time: "11:23 AM",
-    },
-    {
-      id: 2,
-      message: "Outdated SSL Certificate on web-server",
-      severity: "High",
-      time: "10:45 AM",
-    },
-    {
-      id: 3,
-      message: "Unusual Login Activity Detected",
-      severity: "Medium",
-      time: "09:30 AM",
-    },
-    {
-      id: 4,
-      message: "Firewall Rule Misconfiguration",
-      severity: "High",
-      time: "Yesterday",
-    },
   ];
 
   return (
@@ -345,16 +330,16 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentAlerts.map((alert) => (
+                  {scanResults.map((alert) => (
                     <div
                       key={alert.id}
                       className="bg-[#212121] p-3 rounded-lg flex items-start"
                     >
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
-                          alert.severity === "Critical"
+                          alert.risk === "Critical"
                             ? "bg-[#ff3333]/20 text-[#ff3333]"
-                            : alert.severity === "High"
+                            : alert.risk === "High"
                             ? "bg-[#ff9933]/20 text-[#ff9933]"
                             : "bg-[#ffcc33]/20 text-[#ffcc33]"
                         }`}
@@ -363,21 +348,23 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between">
-                          <div className="font-medium">{alert.message}</div>
+                          <div className="font-medium">{alert.alert}</div>
                           <div className="text-xs text-gray-400">
-                            {alert.time}
+                            {new Date(
+                              lastReport?.start_time || 0
+                            ).toLocaleString()}
                           </div>
                         </div>
                         <div
                           className={`text-xs mt-1 ${
-                            alert.severity === "Critical"
+                            alert.risk === "Critical"
                               ? "text-[#ff3333]"
-                              : alert.severity === "High"
+                              : alert.risk === "High"
                               ? "text-[#ff9933]"
                               : "text-[#ffcc33]"
                           }`}
                         >
-                          {alert.severity} Severity
+                          {alert.risk} Severity
                         </div>
                       </div>
                     </div>
@@ -529,50 +516,14 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[
-                  {
-                    message: "Open Port Detected on 192.168.1.1",
-                    severity: "Critical",
-                    time: "Today, 11:23 AM",
-                    description:
-                      "Port 23 (Telnet) is open and accessible from the internet. This poses a significant security risk as Telnet transmits data in plaintext.",
-                  },
-                  {
-                    message: "Outdated SSL Certificate on web-server",
-                    severity: "High",
-                    time: "Today, 10:45 AM",
-                    description:
-                      "The SSL certificate for web-server.local is using an outdated encryption algorithm (SHA-1) which is considered insecure.",
-                  },
-                  {
-                    message: "Unusual Login Activity Detected",
-                    severity: "Medium",
-                    time: "Today, 09:30 AM",
-                    description:
-                      "Multiple failed login attempts detected from IP 203.45.78.92 targeting admin accounts.",
-                  },
-                  {
-                    message: "Firewall Rule Misconfiguration",
-                    severity: "High",
-                    time: "Yesterday, 3:15 PM",
-                    description:
-                      "Firewall rule #23 allows unrestricted access to internal network from external sources.",
-                  },
-                  {
-                    message: "Outdated Software Detected",
-                    severity: "Medium",
-                    time: "Yesterday, 1:20 PM",
-                    description:
-                      "Apache server running version 2.2.15 which has known vulnerabilities. Update to latest version recommended.",
-                  },
-                ].map((alert, i) => (
+                {scanResults.map((alert, i) => (
                   <div key={i} className="bg-[#212121] p-4 rounded-lg">
                     <div className="flex items-start">
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
-                          alert.severity === "Critical"
+                          alert.risk === "Critical"
                             ? "bg-[#ff3333]/20 text-[#ff3333]"
-                            : alert.severity === "High"
+                            : alert.risk === "High"
                             ? "bg-[#ff9933]/20 text-[#ff9933]"
                             : "bg-[#ffcc33]/20 text-[#ffcc33]"
                         }`}
@@ -581,21 +532,21 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                          <div className="font-medium">{alert.message}</div>
+                          <div className="font-medium">{alert.alert}</div>
                           <div className="text-xs text-gray-400">
-                            {alert.time}
+                            {new Date(lastReport?.start_time || "").toUTCString()}
                           </div>
                         </div>
                         <div
                           className={`text-xs mt-1 mb-2 ${
-                            alert.severity === "Critical"
+                            alert.risk === "Critical"
                               ? "text-[#ff3333]"
-                              : alert.severity === "High"
+                              : alert.risk === "High"
                               ? "text-[#ff9933]"
                               : "text-[#ffcc33]"
                           }`}
                         >
-                          {alert.severity} Severity
+                          {alert.risk} Severity
                         </div>
                         <p className="text-sm text-gray-400">
                           {alert.description}

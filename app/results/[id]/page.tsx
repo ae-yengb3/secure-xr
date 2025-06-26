@@ -53,14 +53,14 @@ export default function ScanResultDetail({
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const [report, setReport] = useState(null);
+  const [report, setReport] = useState<ScanResult | null>(null);
 
   const { extra, reports } = useAppSelector((state) => state.scan);
 
   useEffect(() => {
-    const id = parseInt(location.href.split("/").pop() || "0")* 1;
+    const id = parseInt(location.href.split("/").pop() || "0") * 1;
 
-    setReport(reports[id]);
+    if (reports && reports[id]) setReport(reports[id]);
   }, []);
 
   // useEffect(() => {
@@ -324,7 +324,7 @@ export default function ScanResultDetail({
                     <p className="font-medium">Completed</p>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {new Date(report?.start_time).toLocaleString()}
+                    {new Date(report?.start_time || "").toLocaleString()}
                   </p>
                 </div>
 
@@ -339,7 +339,7 @@ export default function ScanResultDetail({
                     </p>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {report?.critial} critical, {report?.high} high
+                    {report?.critical} critical, {report?.high} high
                   </p>
                 </div>
               </div>
@@ -376,7 +376,7 @@ export default function ScanResultDetail({
                     }
                     onClick={() => setSeverityFilter("Critical")}
                   >
-                    Critical ({report?.critial})
+                    Critical ({report?.critical})
                   </Button>
                   <Button
                     variant={severityFilter === "High" ? "default" : "outline"}
@@ -421,7 +421,7 @@ export default function ScanResultDetail({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {report?.alert?.length === 0 ? (
+                {report?.alerts?.length === 0 ? (
                   <div className="text-center py-8">
                     <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium">
@@ -457,7 +457,7 @@ export default function ScanResultDetail({
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              {getSeverityBadge(vuln.severity)}
+                              {getSeverityBadge(vuln.risk)}
                               {getConfidenceBadge(vuln.confidence)}
                             </div>
                           </div>
@@ -535,7 +535,7 @@ export default function ScanResultDetail({
                                 size="sm"
                                 onClick={() =>
                                   copyToClipboard(
-                                    `Vulnerability: ${vuln.name}\nSeverity: ${vuln.severity}\nDescription: ${vuln.description}\nSolution: ${vuln.solution}\nID: ${vuln.id}`
+                                    `Vulnerability: ${vuln.name}\nSeverity: ${vuln.risk}\nDescription: ${vuln.description}\nSolution: ${vuln.solution}\nID: ${vuln.id}`
                                   )
                                 }
                               >

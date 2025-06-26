@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { getReports, getScans, startScan } from "../utils/scan"
+import { ScanExtra, ScanResult } from "../scan-engine"
 
 export type ScanState = {
     scans: any
     loading: boolean
     error: any,
-    reports: any,
-    extra: any
+    reports: ScanResult[]| null,
+    extra: ScanExtra | null
 }
 const initialState: ScanState = {
     scans: null,
