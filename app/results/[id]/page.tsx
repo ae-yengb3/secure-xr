@@ -423,7 +423,15 @@ export default function ScanResultDetail({
                   <div className="text-center py-8">
                     <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium">
-                      No vulnerabilities found
+                      {severityFilter === "all"
+                        ? "No vulnerabilities found"
+                        : severityFilter === "Critical"
+                        ? "No critical vulnerabilities found"
+                        : severityFilter === "High"
+                        ? "No high vulnerabilities found"
+                        : severityFilter === "Medium"
+                        ? "No medium vulnerabilities found"
+                        : "No low vulnerabilities found"}
                     </h3>
                     <p className="text-muted-foreground">
                       No security issues were detected with the selected filter
