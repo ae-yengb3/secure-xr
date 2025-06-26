@@ -402,7 +402,7 @@ export default function ScanPage() {
                               <Search className="h-6 w-6 text-primary" />
                             </div>
                             <div className="text-center">
-                              <h4 className="font-medium">Passive Scan</h4>
+                              <h4 className="font-medium">Vulnerability Scan</h4>
                               <p className="text-xs text-muted-foreground mt-1">
                                 Quick discovery, no target impact
                               </p>
@@ -421,7 +421,7 @@ export default function ScanPage() {
                               <FileText className="h-6 w-6 text-primary" />
                             </div>
                             <div className="text-center">
-                              <h4 className="font-medium">Active Scan</h4>
+                              <h4 className="font-medium">Leaks Scan</h4>
                               <p className="text-xs text-muted-foreground mt-1">
                                 Deep inspection; may trigger alerts
                               </p>
