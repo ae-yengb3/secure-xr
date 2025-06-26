@@ -38,7 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { getScanResult } from "@/app/actions/scan-actions";
-import type { ScanResult } from "@/lib/scan-engine";
+import type { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import { useToast } from "@/components/ui/use-toast";
 import { useAppSelector } from "@/lib/hook";
 import { parse } from "path";
@@ -54,6 +54,9 @@ export default function ScanResultDetail({
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const [report, setReport] = useState<ScanResult | null>(null);
+  const [filteredReports, setFilteredReports] = useState<VulnerabilityResult[]>(
+    []
+  );
 
   const { extra, reports } = useAppSelector((state) => state.scan);
 
@@ -63,20 +66,15 @@ export default function ScanResultDetail({
     if (reports && reports[id]) setReport(reports[id]);
   }, []);
 
-  // useEffect(() => {
-  //   async function fetchScanResult() {
-  //     try {
-  //       const result = await getScanResult(params.id);
-  //       setScanResult(result);
-  //     } catch (error) {
-  //       console.error("Error fetching scan result:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
+  useEffect(() => {
+    const id = parseInt(location.href.split("/").pop() || "0") * 1;
 
-  //   fetchScanResult();
-  // }, [params.id]);
+    setFilteredReports(
+      report?.alerts.filter(
+        (item) => severityFilter === "all" || item.risk === severityFilter
+      ) || []
+    );
+  }, [report, severityFilter]);
 
   if (loading) {
     return (
@@ -421,7 +419,7 @@ export default function ScanResultDetail({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {report?.alerts?.length === 0 ? (
+                {filteredReports?.length === 0 ? (
                   <div className="text-center py-8">
                     <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium">
@@ -433,7 +431,7 @@ export default function ScanResultDetail({
                   </div>
                 ) : (
                   <Accordion type="multiple" className="space-y-4">
-                    {report?.alerts?.map((vuln, index) => (
+                    {filteredReports?.map((vuln, index) => (
                       <AccordionItem
                         key={vuln.id}
                         value={vuln.id}
