@@ -42,9 +42,10 @@ export interface ScanResult{
   high: number
   medium: number
   low: number
+  informational: number
 }
 
 // export interface ScanResult {
 //   extra: Extra
 //   results: Results
-// }
+// }---------------------------------

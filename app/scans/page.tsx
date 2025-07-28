@@ -404,7 +404,7 @@ export default function ScanPage() {
                             <div className="text-center">
                               <h4 className="font-medium">Vulnerability Scan</h4>
                               <p className="text-xs text-muted-foreground mt-1">
-                                Quick discovery, no target impact
+                                Find Vulnerabilities
                               </p>
                             </div>
                           </button>
@@ -423,7 +423,7 @@ export default function ScanPage() {
                             <div className="text-center">
                               <h4 className="font-medium">Leaks Scan</h4>
                               <p className="text-xs text-muted-foreground mt-1">
-                                Deep inspection; may trigger alerts
+                                Get Data Leaked on internet
                               </p>
                             </div>
                           </button>
@@ -448,7 +448,7 @@ export default function ScanPage() {
                           </button>
                         </div>
 
-                        {scanType === "Active" || scanType === "Hybrid" ? (
+                        {scanType === "Passive" || scanType === "Hybrid" ? (
                           <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
                             <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                             <p className="text-sm">

@@ -139,6 +139,8 @@ export default function ScanResultDetail({
         return <Info className="h-5 w-5 text-yellow-500" />;
       case "Low":
         return <Info className="h-5 w-5 text-green-500" />;
+      case "Informational":
+        return <Info className="h-5 w-5 text-blue-500" />;
       default:
         return <Info className="h-5 w-5" />;
     }
@@ -150,6 +152,7 @@ export default function ScanResultDetail({
       High: "bg-orange-500/10 text-orange-500 hover:bg-orange-500/20",
       Medium: "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20",
       Low: "bg-green-500/10 text-green-500 hover:bg-green-500/20",
+      Informational: "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20",
     };
 
     return (
@@ -363,9 +366,7 @@ export default function ScanResultDetail({
                     All ({report?.vulnerabilities})
                   </Button>
                   <Button
-                    variant={
-                      severityFilter === "Critical" ? "default" : "outline"
-                    }
+                    variant={severityFilter === "Critical" ? "default" : "outline"}
                     size="sm"
                     className={
                       severityFilter !== "Critical"
@@ -413,6 +414,18 @@ export default function ScanResultDetail({
                     onClick={() => setSeverityFilter("Low")}
                   >
                     Low ({report?.low})
+                  </Button>
+                  <Button
+                    variant={severityFilter === "Informational" ? "default" : "outline"}
+                    size="sm"
+                    className={
+                      severityFilter !== "Informational"
+                        ? "text-blue-500 border-blue-500/20"
+                        : ""
+                    }
+                    onClick={() => setSeverityFilter("Informational")}
+                  >
+                    Informational ({report?.informational})
                   </Button>
                 </div>
               </div>

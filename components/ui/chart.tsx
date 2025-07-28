@@ -20,7 +20,7 @@ const ChartTooltip = React.forwardRef<
   }
 
   return (
-    <div ref={ref} className={cn("rounded-lg border bg-background p-2 shadow-sm")} {...props}>
+    <div ref={ref} className="rounded-lg border bg-background p-2 shadow-sm" {...props}>
       {label && <div className="mb-1 font-medium">{labelFormatter ? labelFormatter(label) : label}</div>}
       <div className="flex flex-col gap-0.5">
         {payload
