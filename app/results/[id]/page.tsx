@@ -232,13 +232,13 @@ export default function ScanResultDetail({
             <FileText className="h-5 w-5" />
             Results
           </Link>
-          <Link
+          {/* <Link
             href="/settings"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
           >
             <Settings className="h-5 w-5" />
             Settings
-          </Link>
+          </Link> */}
         </nav>
       </aside>
 
@@ -561,9 +561,9 @@ export default function ScanResultDetail({
                                 <Copy className="h-3 w-3 mr-1" />
                                 Copy Details
                               </Button>
-                              <Button variant="outline" size="sm">
+                              {/* <Button variant="outline" size="sm">
                                 Flag as False Positive
-                              </Button>
+                              </Button> */}
                             </div>
                           </div>
                         </AccordionContent>

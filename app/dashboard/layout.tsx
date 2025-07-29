@@ -84,7 +84,7 @@ export default function DashboardLayout({
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/scans", label: "Scans", icon: Scan },
     { href: "/results", label: "Results", icon: FileBarChart },
-    { href: "/dashboard/settings", label: "Settings", icon: Settings },
+    // { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   return (

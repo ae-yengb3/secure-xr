@@ -551,7 +551,7 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-400">
                           {alert.description}
                         </p>
-                        <div className="flex gap-2 mt-3">
+                        {/* <div className="flex gap-2 mt-3">
                           <Button
                             size="sm"
                             className="bg-[#0080ff] hover:bg-[#0060cc]"
@@ -565,7 +565,7 @@ export default function DashboardPage() {
                           >
                             Ignore
                           </Button>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
