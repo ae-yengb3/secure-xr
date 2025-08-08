@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { loginUser, getMe } from "../utils/user"
+import { loginUser, getMe, refreshToken } from "../utils/user"
 
 export type UserState = {
     user: any;
@@ -52,6 +52,20 @@ export const userSlice = createSlice({
             .addCase(getMe.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
+            })
+            .addCase(refreshToken.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(refreshToken.fulfilled, (state, action) => {
+                state.loading = false
+                state.token = action.payload.access
+            })
+            .addCase(refreshToken.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+                state.user = null
+                state.token = null
             })
     },
 })
