@@ -2,15 +2,17 @@ import { createSlice } from "@reduxjs/toolkit"
 import { loginUser, getMe } from "../utils/user"
 
 export type UserState = {
-    user: any
-    token: any
-    loading: boolean
-    error: any
+    user: any;
+    token: string | null;
+    refresh_token: string | null;
+    loading: boolean;
+    error: any;
 }
 
 const initialState: UserState = {
     user: null,
     token: null,
+    refresh_token: null,
     loading: false,
     error: null,
 }
@@ -33,6 +35,7 @@ export const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false
                 state.token = action.payload.access
+                state.refresh_token = action.payload.refresh
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false

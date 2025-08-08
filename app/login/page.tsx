@@ -20,11 +20,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { token, loading, user } = useAppSelector((state) => state.user);
+  const { token, refresh_token, loading, user, error } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     if (token) {
       sessionStorage.setItem("token", token);
+      sessionStorage.setItem("refresh_token", refresh_token || "");
       dispatch(getMe());
     }
   }, [token]);
@@ -102,6 +103,12 @@ export default function LoginPage() {
                   Forgot Password?
                 </Link>
               </div>
+
+              {error && (
+                <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20">
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
+              )}
 
               <Button
                 type="submit"
