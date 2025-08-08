@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
@@ -342,337 +342,150 @@ export default function ScanPage() {
                     </div>
                   </div>
                 ) : (
-                  <Tabs defaultValue="target" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="target">Target</TabsTrigger>
-                      <TabsTrigger value="options">Scan Options</TabsTrigger>
-                      <TabsTrigger value="modules">Modules</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="target" className="space-y-6">
-                      <div className="space-y-4">
-                        <div>
-                          <h3 className="text-lg font-medium mb-2">
-                            Target Type
-                          </h3>
-                          <RadioGroup
-                            defaultValue="url"
-                            value={targetType}
-                            onValueChange={setTargetType}
-                            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  <div className="space-y-8">
+                    {/* Target Section */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Target Type</h3>
+                      <RadioGroup
+                        defaultValue="url"
+                        value={targetType}
+                        onValueChange={setTargetType}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="url" id="url" />
+                          <Label
+                            htmlFor="url"
+                            className="flex items-center gap-2 cursor-pointer"
                           >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="url" id="url" />
-                              <Label
-                                htmlFor="url"
-                                className="flex items-center gap-2 cursor-pointer"
-                              >
-                                <Globe className="h-5 w-5" />
-                                URL / Domain
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="bulk" id="bulk" />
-                              <Label
-                                htmlFor="bulk"
-                                className="flex items-center gap-2 cursor-pointer"
-                              >
-                                <FileText className="h-5 w-5" />
-                                Bulk Scan (CSV)
-                              </Label>
-                            </div>
-                          </RadioGroup>
+                            <Globe className="h-5 w-5" />
+                            URL / Domain
+                          </Label>
                         </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="bulk" id="bulk" />
+                          <Label
+                            htmlFor="bulk"
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            <FileText className="h-5 w-5" />
+                            Bulk Scan (CSV)
+                          </Label>
+                        </div>
+                      </RadioGroup>
 
-                        <Separator />
+                      {targetType === "url" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="url-input">URL or Domain</Label>
+                          <Input
+                            id="url-input"
+                            placeholder="https://example.com"
+                            value={targetUrl}
+                            onChange={(e) => setTargetUrl(e.target.value)}
+                          />
+                          <p className="text-sm text-muted-foreground">
+                            Enter a full URL (https://example.com/path) or
+                            domain name (example.com)
+                          </p>
+                        </div>
+                      )}
 
-                        {targetType === "url" && (
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="url-input">URL or Domain</Label>
-                              <Input
-                                id="url-input"
-                                placeholder="https://example.com"
-                                value={targetUrl}
-                                onChange={(e) => setTargetUrl(e.target.value)}
-                              />
-                              <p className="text-sm text-muted-foreground">
-                                Enter a full URL (https://example.com/path) or
-                                domain name (example.com)
-                              </p>
-                            </div>
-                          </div>
-                        )}
-
-                        {targetType === "package" && (
-                          <div className="space-y-4">
-                            <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
-                              <div className="flex flex-col items-center justify-center gap-2">
-                                <Upload className="h-8 w-8 text-muted-foreground" />
-                                <h3 className="font-medium">
-                                  Upload Software Package
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                  Drag and drop your file here, or click to
-                                  browse
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Supported formats: ZIP, JAR, WAR, EXE, APK,
-                                  PY, JS
-                                </p>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="mt-2"
-                                >
-                                  Browse Files
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {targetType === "bulk" && (
-                          <div className="space-y-4">
-                            <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
-                              <div className="flex flex-col items-center justify-center gap-2">
-                                <Upload className="h-8 w-8 text-muted-foreground" />
-                                <h3 className="font-medium">Upload CSV File</h3>
-                                <p className="text-sm text-muted-foreground">
-                                  Upload a CSV file with one URL or domain per
-                                  line
-                                </p>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="mt-2"
-                                >
-                                  Browse Files
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
-                              <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                              <p className="text-sm">
-                                This is not yet available
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="options" className="space-y-6">
-                      <div className="space-y-6">
+                      {targetType === "bulk" && (
                         <div className="space-y-4">
-                          <h3 className="text-lg font-medium">Scan Type</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <button
-                              onClick={() => setScanType("Passive")}
-                              className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                                scanType === "Passive"
-                                  ? "border-primary bg-primary/10 text-primary"
-                                  : "border-border/50 hover:border-border hover:bg-card"
-                              }`}
-                            >
-                              <div className="p-3 rounded-full bg-primary/10">
-                                <Search className="h-6 w-6 text-primary" />
-                              </div>
-                              <div className="text-center">
-                                <h4 className="font-medium">
-                                  Vulnerability Scan
-                                </h4>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  Find Vulnerabilities
-                                </p>
-                              </div>
-                            </button>
-
-                            <button
-                              onClick={() => setScanType("Active")}
-                              className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                                scanType === "Active"
-                                  ? "border-primary bg-primary/10 text-primary"
-                                  : "border-border/50 hover:border-border hover:bg-card"
-                              }`}
-                            >
-                              <div className="p-3 rounded-full bg-primary/10">
-                                <FileText className="h-6 w-6 text-primary" />
-                              </div>
-                              <div className="text-center">
-                                <h4 className="font-medium">Leaks Scan</h4>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  Get Data Leaked on internet
-                                </p>
-                              </div>
-                            </button>
-
-                            <button
-                              onClick={() => setScanType("Hybrid")}
-                              className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                                scanType === "Hybrid"
-                                  ? "border-primary bg-primary/10 text-primary"
-                                  : "border-border/50 hover:border-border hover:bg-card"
-                              }`}
-                            >
-                              <div className="p-3 rounded-full bg-primary/10">
-                                <Shield className="h-6 w-6 text-primary" />
-                              </div>
-                              <div className="text-center">
-                                <h4 className="font-medium">Both (Hybrid)</h4>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  Comprehensive (slower but thorough)
-                                </p>
-                              </div>
-                            </button>
-                          </div>
-
-                          {scanType === "Passive" || scanType === "Hybrid" ? (
-                            <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
-                              <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                              <p className="text-sm">
-                                Active scans may affect network performance and
-                                trigger security alerts on the target system.
-                              </p>
-                            </div>
-                          ) : null}
-                        </div>
-
-                        <Separator />
-
-                        {/* <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Scan Timeout</h3>
-                        <Select value={scanTimeout} onValueChange={setScanTimeout}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select timeout" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="15">15 minutes</SelectItem>
-                            <SelectItem value="30">30 minutes</SelectItem>
-                            <SelectItem value="60">1 hour</SelectItem>
-                            <SelectItem value="120">2 hours</SelectItem>
-                            <SelectItem value="240">4 hours</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-sm text-muted-foreground">
-                          Maximum time the scan will run before automatically stopping
-                        </p>
-                      </div> */}
-                      </div>
-                    </TabsContent>
-
-                    {/* <TabsContent value="modules" className="space-y-6">
-                    <div className="space-y-6">
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Scan Modules</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Select which security modules to include in your scan
-                        </p>
-
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label htmlFor="port-scan" className="text-base">
-                                Port Scanning
-                              </Label>
-                              <p className="text-sm text-muted-foreground">Detect open ports and running services</p>
-                            </div>
-                            <Switch
-                              id="port-scan"
-                              checked={selectedModules.portScan}
-                              onCheckedChange={() => handleModuleToggle("portScan")}
-                            />
-                          </div>
-
-                          <Separator />
-
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label htmlFor="vuln-detection" className="text-base">
-                                Vulnerability Detection
-                              </Label>
+                          <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                              <Upload className="h-8 w-8 text-muted-foreground" />
+                              <h3 className="font-medium">Upload CSV File</h3>
                               <p className="text-sm text-muted-foreground">
-                                Identify known security vulnerabilities (CVEs)
+                                Upload a CSV file with one URL or domain per line
                               </p>
+                              <Button variant="outline" size="sm" className="mt-2">
+                                Browse Files
+                              </Button>
                             </div>
-                            <Switch
-                              id="vuln-detection"
-                              checked={selectedModules.vulnDetection}
-                              onCheckedChange={() => handleModuleToggle("vulnDetection")}
-                            />
                           </div>
-
-                          <Separator />
-
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label htmlFor="tech-stack" className="text-base">
-                                Technology Stack Detection
-                              </Label>
-                              <p className="text-sm text-muted-foreground">
-                                Identify frameworks, libraries, and technologies in use
-                              </p>
-                            </div>
-                            <Switch
-                              id="tech-stack"
-                              checked={selectedModules.techStack}
-                              onCheckedChange={() => handleModuleToggle("techStack")}
-                            />
-                          </div>
-
-                          <Separator />
-
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label htmlFor="ssl-check" className="text-base">
-                                SSL/TLS Check
-                              </Label>
-                              <p className="text-sm text-muted-foreground">
-                                Analyze SSL/TLS configuration and certificates
-                              </p>
-                            </div>
-                            <Switch
-                              id="ssl-check"
-                              checked={selectedModules.sslCheck}
-                              onCheckedChange={() => handleModuleToggle("sslCheck")}
-                            />
-                          </div>
-
-                          <Separator />
-
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label htmlFor="dns-enum" className="text-base">
-                                DNS Enumeration
-                              </Label>
-                              <p className="text-sm text-muted-foreground">Discover subdomains and DNS records</p>
-                            </div>
-                            <Switch
-                              id="dns-enum"
-                              checked={selectedModules.dnsEnum}
-                              onCheckedChange={() => handleModuleToggle("dnsEnum")}
-                            />
-                          </div>
-
-                          <Separator />
-
-                          <div className="flex items-center justify-between space-x-2">
-                            <div className="space-y-0.5">
-                              <Label htmlFor="dir-bruteforce" className="text-base">
-                                Directory Bruteforce
-                              </Label>
-                              <p className="text-sm text-muted-foreground">Discover hidden directories and files</p>
-                            </div>
-                            <Switch
-                              id="dir-bruteforce"
-                              checked={selectedModules.dirBruteforce}
-                              onCheckedChange={() => handleModuleToggle("dirBruteforce")}
-                            />
+                          <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
+                            <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                            <p className="text-sm">This is not yet available</p>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
-                  </TabsContent> */}
+
+                    <Separator />
+
+                    {/* Scan Type Section */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Scan Type</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button
+                          onClick={() => setScanType("Passive")}
+                          className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                            scanType === "Passive"
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border/50 hover:border-border hover:bg-card"
+                          }`}
+                        >
+                          <div className="p-3 rounded-full bg-primary/10">
+                            <Search className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="text-center">
+                            <h4 className="font-medium">Vulnerability Scan</h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Find Vulnerabilities
+                            </p>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => setScanType("Active")}
+                          className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                            scanType === "Active"
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border/50 hover:border-border hover:bg-card"
+                          }`}
+                        >
+                          <div className="p-3 rounded-full bg-primary/10">
+                            <FileText className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="text-center">
+                            <h4 className="font-medium">Leaks Scan</h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Get Data Leaked on internet
+                            </p>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => setScanType("Hybrid")}
+                          className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                            scanType === "Hybrid"
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border/50 hover:border-border hover:bg-card"
+                          }`}
+                        >
+                          <div className="p-3 rounded-full bg-primary/10">
+                            <Shield className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="text-center">
+                            <h4 className="font-medium">Both (Hybrid)</h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Comprehensive (slower but thorough)
+                            </p>
+                          </div>
+                        </button>
+                      </div>
+
+                      {scanType === "Passive" || scanType === "Hybrid" ? (
+                        <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
+                          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                          <p className="text-sm">
+                            Active scans may affect network performance and
+                            trigger security alerts on the target system.
+                          </p>
+                        </div>
+                      ) : null}
+                    </div>
 
                     <div className="flex justify-end space-x-4 pt-4">
                       <Button
@@ -700,7 +513,7 @@ export default function ScanPage() {
                         Start Scan
                       </Button>
                     </div>
-                  </Tabs>
+                  </div>
                 )}
               </CardContent>
             </Card>
