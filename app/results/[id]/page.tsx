@@ -20,6 +20,8 @@ import {
   Copy,
   LinkIcon,
   CheckCircle,
+  LayoutDashboard,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,12 +44,30 @@ import type { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import { useToast } from "@/components/ui/use-toast";
 import { useAppSelector } from "@/lib/hook";
 import { parse } from "path";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/scans", label: "Scans", icon: Search },
+  { href: "/results", label: "Results", icon: FileText },
+];
 
 export default function ScanResultDetail({
   params,
 }: {
   params: { id: string };
 }) {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [severityFilter, setSeverityFilter] = useState("all");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
@@ -197,65 +217,118 @@ export default function ScanResultDetail({
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`}
-      >
-        <div className="flex h-16 items-center border-b border-border/40 px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">SecureScanX</span>
-          </Link>
-        </div>
-        <nav className="space-y-1 px-3 py-4">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
-          >
-            <BarChart3 className="h-5 w-5" />
-            Dashboard
-          </Link>
-          <Link
-            href="/scans"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
-          >
-            <Search className="h-5 w-5" />
-            Scan
-          </Link>
-          <Link
-            href="/results"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-primary/10 text-primary"
-          >
-            <FileText className="h-5 w-5" />
-            Results
-          </Link>
-          {/* <Link
-            href="/settings"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
-          >
-            <Settings className="h-5 w-5" />
-            Settings
-          </Link> */}
-        </nav>
-      </aside>
+    <SidebarProvider>
+      <div className="min-h-screen bg-[#121212] text-white flex">
+        {/* Sidebar for desktop */}
+        <Sidebar className="hidden md:flex border-r border-gray-800">
+          <SidebarHeader className="p-4 border-b border-gray-800">
+            <Link href="/" className="flex items-center space-x-2">
+              <Shield className="h-8 w-8 text-[#0080ff]" />
+              <span className="text-xl font-bold">SecureScanX</span>
+            </Link>
+          </SidebarHeader>
+          <SidebarContent className="py-4">
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    className={
+                      pathname === item.href
+                        ? "bg-[#0080ff]/20 text-[#0080ff]"
+                        : ""
+                    }
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter className="p-4 border-t border-gray-800">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/">
+                    <LogOut className="h-5 w-5" />
+                    <span>Logout</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
 
-      {/* Main Content */}
-      <div className="flex-1 md:ml-64">
+        {/* Mobile Sidebar */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-80 z-40 md:hidden ${
+          mobileMenuOpen ? "block" : "hidden"
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      ></div>
+
+      <div
+        className={`fixed inset-y-0 left-0 w-64 bg-[#1a1a1a] z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-4 border-b border-gray-800 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Shield className="h-6 w-6 text-[#0080ff]" />
+            <span className="text-lg font-bold">SecureScanX</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        <div className="py-4">
+          <nav className="space-y-1 px-2">
+            <Link
+              href="/dashboard"
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              href="/scans"
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Search className="h-5 w-5" />
+              <span>Scans</span>
+            </Link>
+            <Link
+              href="/results"
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <FileText className="h-5 w-5" />
+              <span>Results</span>
+            </Link>
+          </nav>
+        </div>
+      </div>
+
+        {/* Main Content */}
+        <div className="flex-1 md:ml-64">
         {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-4">
             <button
-              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium border border-gray-700 hover:bg-gray-800 h-10 w-10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
+              <Menu className="h-4 w-4" />
               <span className="sr-only">Toggle Menu</span>
             </button>
 
@@ -285,7 +358,7 @@ export default function ScanResultDetail({
         </header>
 
         {/* Results Content */}
-        <main className="container py-6">
+        <main className="w-full py-6 px-6">
           {/* Summary Card */}
           <Card className="mb-6">
             <CardContent className="p-6">
@@ -651,8 +724,9 @@ export default function ScanResultDetail({
             )}
           </div> */}
         </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
 

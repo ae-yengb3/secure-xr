@@ -18,6 +18,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Activity,
+  LayoutDashboard,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,8 +48,26 @@ import { getAllScanResults } from "../actions/scan-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
 import type { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import { getReports } from "@/lib/utils/scan";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/scans", label: "Scans", icon: Search },
+  { href: "/results", label: "Results", icon: FileText },
+];
 
 export default function ResultsPage() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState("date");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -126,53 +146,110 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white flex">
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a1a1a] border-r border-gray-800 transform transition-transform duration-200 ease-in-out ${
+    <SidebarProvider>
+      <div className="min-h-screen w-full bg-[#121212] text-white flex">
+        {/* Sidebar for desktop */}
+        <Sidebar className="hidden md:flex border-r border-gray-800">
+          <SidebarHeader className="p-4 border-b border-gray-800">
+            <Link href="/" className="flex items-center space-x-2">
+              <Shield className="h-8 w-8 text-[#0080ff]" />
+              <span className="text-xl font-bold">SecureScanX</span>
+            </Link>
+          </SidebarHeader>
+          <SidebarContent className="py-4">
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    className={
+                      pathname === item.href
+                        ? "bg-[#0080ff]/20 text-[#0080ff]"
+                        : ""
+                    }
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter className="p-4 border-t border-gray-800">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/">
+                    <LogOut className="h-5 w-5" />
+                    <span>Logout</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+
+        {/* Mobile Sidebar */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-80 z-40 md:hidden ${
+          mobileMenuOpen ? "block" : "hidden"
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      ></div>
+
+      <div
+        className={`fixed inset-y-0 left-0 w-64 bg-[#1a1a1a] z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`}
+        }`}
       >
-        <div className="flex h-16 items-center border-b border-gray-800 px-6">
-          <Link href="/" className="flex items-center gap-2">
+        <div className="p-4 border-b border-gray-800 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
             <Shield className="h-6 w-6 text-[#0080ff]" />
             <span className="text-lg font-bold">SecureScanX</span>
-          </Link>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </div>
-        <nav className="space-y-1 px-3 py-4">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
-          >
-            <BarChart3 className="h-5 w-5" />
-            Dashboard
-          </Link>
-          <Link
-            href="/scans"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
-          >
-            <Search className="h-5 w-5" />
-            Scan
-          </Link>
-          <Link
-            href="/results"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
-          >
-            <FileText className="h-5 w-5" />
-            Results
-          </Link>
-          {/* <Link
-            href="/settings"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
-          >
-            <Settings className="h-5 w-5" />
-            Settings
-          </Link> */}
-        </nav>
-      </aside>
+        <div className="py-4">
+          <nav className="space-y-1 px-2">
+            <Link
+              href="/dashboard"
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              href="/scans"
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Search className="h-5 w-5" />
+              <span>Scans</span>
+            </Link>
+            <Link
+              href="/results"
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <FileText className="h-5 w-5" />
+              <span>Results</span>
+            </Link>
+          </nav>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 md:ml-64">
+        {/* Main Content */}
+        <div className="flex-1">
         {/* Header */}
         <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-4">
@@ -180,11 +257,7 @@ export default function ResultsPage() {
               className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium border border-gray-700 hover:bg-gray-800 h-10 w-10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
+              <Menu className="h-4 w-4" />
               <span className="sr-only">Toggle Menu</span>
             </button>
 
@@ -442,7 +515,8 @@ export default function ResultsPage() {
             </CardContent>
           </Card>
         </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

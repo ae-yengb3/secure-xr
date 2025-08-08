@@ -4,17 +4,18 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Shield,
   Search,
-  FileText,
-  BarChart3,
-  Settings,
   Menu,
   X,
   Upload,
   Globe,
   Package,
   AlertTriangle,
+  Shield,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,11 +44,29 @@ import { useToast } from "@/components/ui/use-toast";
 import { getScans, startScan } from "@/lib/utils/scan";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
 import { getMe } from "@/lib/utils/user";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/scans", label: "Scans", icon: Search },
+  { href: "/results", label: "Results", icon: FileText },
+];
 
 export default function ScanPage() {
   const router = useRouter();
   const { toast } = useToast();
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scanType, setScanType] = useState("Passive");
@@ -117,351 +136,411 @@ export default function ScanPage() {
   }, [scans]);
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white flex">
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a1a1a] border-r border-gray-800 transform transition-transform duration-200 ease-in-out ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`}
-      >
-        <div className="flex h-16 items-center border-b border-gray-800 px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-[#0080ff]" />
-            <span className="text-lg font-bold">SecureScanX</span>
-          </Link>
-        </div>
-        <nav className="space-y-1 px-3 py-4">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
-          >
-            <BarChart3 className="h-5 w-5" />
-            Dashboard
-          </Link>
-          <Link
-            href="/scans"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
-          >
-            <Search className="h-5 w-5" />
-            Scans
-          </Link>
-          <Link
-            href="/results"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
-          >
-            <FileText className="h-5 w-5" />
-            Results
-          </Link>
-          {/* <Link
-            href="/settings"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
-          >
-            <Settings className="h-5 w-5" />
-            Settings
-          </Link> */}
-        </nav>
-      </aside>
+    <SidebarProvider className="bg-red-500">
+      <div className="min-h-screen w-full  bg-[#121212] text-white flex">
+        {/* Sidebar for desktop */}
+        <Sidebar className="hidden md:flex border-r border-gray-800">
+          <SidebarHeader className="p-4 border-b border-gray-800">
+            <Link href="/" className="flex items-center space-x-2">
+              <Shield className="h-8 w-8 text-[#0080ff]" />
+              <span className="text-xl font-bold">SecureScanX</span>
+            </Link>
+          </SidebarHeader>
+          <SidebarContent className="py-4">
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    className={
+                      pathname === item.href
+                        ? "bg-[#0080ff]/20 text-[#0080ff]"
+                        : ""
+                    }
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter className="p-4 border-t border-gray-800">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/">
+                    <LogOut className="h-5 w-5" />
+                    <span>Logout</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
 
-      {/* Main Content */}
-      <div className="flex-1 md:ml-64">
-        {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
-          <div className="flex h-16 items-center justify-between px-4">
-            <button
-              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium border border-gray-700 hover:bg-gray-800 h-10 w-10"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        {/* Mobile Sidebar */}
+        <div
+          className={`fixed inset-0 bg-black bg-opacity-80 z-40 md:hidden ${
+            mobileMenuOpen ? "block" : "hidden"
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+
+        <div
+          className={`fixed inset-y-0 left-0 w-64 bg-[#1a1a1a] z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="p-4 border-b border-gray-800 flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-6 w-6 text-[#0080ff]" />
+              <span className="text-lg font-bold">SecureScanX</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(false)}
             >
-              {mobileMenuOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
-              <span className="sr-only">Toggle Menu</span>
-            </button>
-
-            <div className="flex-1 flex justify-center md:justify-start">
-              <h1 className="text-xl font-bold">Security Scan</h1>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Link href="/results">
-                <Button variant="outline" size="sm">
-                  View Results
-                </Button>
-              </Link>
-            </div>
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-        </header>
+          <div className="py-4">
+            <nav className="space-y-1 px-2">
+              <Link
+                href="/dashboard"
+                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <BarChart3 className="h-5 w-5" />
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                href="/scans"
+                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Search className="h-5 w-5" />
+                <span>Scans</span>
+              </Link>
+              <Link
+                href="/results"
+                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <FileText className="h-5 w-5" />
+                <span>Results</span>
+              </Link>
+            </nav>
+          </div>
+        </div>
+        <div className="flex-1">
+          <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
+            <div className="flex h-16 items-center justify-between px-4">
+              <button
+                className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium border border-gray-700 hover:bg-gray-800 h-10 w-10"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <Menu className="h-4 w-4" />
+                <span className="sr-only">Toggle Menu</span>
+              </button>
 
-        {/* Scan Content */}
-        <main className="container py-6">
-          <Card className="bg-[#1a1a1a] border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-white">Start a New Security Scan</CardTitle>
-              <CardDescription className="text-gray-400">
-                Configure your scan settings to detect vulnerabilities in your
-                target
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isScanning ? (
-                <div className="space-y-6">
-                  <div className="text-center space-y-4">
-                    <div className="inline-flex items-center justify-center p-4 rounded-full bg-primary/10">
-                      <Search className="h-8 w-8 text-primary animate-pulse" />
+              <div className="flex-1 flex justify-center md:justify-start">
+                <h1 className="text-xl font-bold">Security Scan</h1>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Link href="/results">
+                  <Button variant="outline" size="sm">
+                    View Results
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </header>
+
+          {/* Scan Content */}
+          <main className="w-full py-6 px-6">
+            <Card className="bg-[#1a1a1a] border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-white">
+                  Start a New Security Scan
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Configure your scan settings to detect vulnerabilities in your
+                  target
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isScanning ? (
+                  <div className="space-y-6">
+                    <div className="text-center space-y-4">
+                      <div className="inline-flex items-center justify-center p-4 rounded-full bg-primary/10">
+                        <Search className="h-8 w-8 text-primary animate-pulse" />
+                      </div>
+                      <h3 className="text-xl font-bold">
+                        Scanning in Progress
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Please wait while we scan your target for
+                        vulnerabilities
+                      </p>
                     </div>
-                    <h3 className="text-xl font-bold">Scanning in Progress</h3>
-                    <p className="text-muted-foreground">
-                      Please wait while we scan your target for vulnerabilities
-                    </p>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progress</span>
-                      <span>{scanProgress}%</span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Progress</span>
+                        <span>{scanProgress}%</span>
+                      </div>
+                      <Progress value={scanProgress} className="h-2" />
                     </div>
-                    <Progress value={scanProgress} className="h-2" />
-                  </div>
 
-                  <div className="space-y-2 text-sm">
-                    {scanProgress >= 10 && (
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        <span>Port scanning completed</span>
-                      </div>
-                    )}
-                    {scanProgress >= 30 && (
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        <span>Technology stack detection completed</span>
-                      </div>
-                    )}
-                    {scanProgress >= 50 && scanProgress < 85 ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                        <span>Vulnerability detection in progress</span>
-                      </div>
-                    ) : scanProgress >= 85 ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        <span>Vulnerability detection completed</span>
-                      </div>
-                    ) : null}
-                    {scanProgress < 85 ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-muted" />
-                        <span>SSL/TLS check pending</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                        <span>SSL/TLS check in progress</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex justify-center">
-                    <Button variant="destructive" onClick={handleCancelScan}>
-                      Cancel Scan
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Tabs defaultValue="target" className="space-y-6">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="target">Target</TabsTrigger>
-                    <TabsTrigger value="options">Scan Options</TabsTrigger>
-                    <TabsTrigger value="modules">Modules</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="target" className="space-y-6">
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-lg font-medium mb-2">
-                          Target Type
-                        </h3>
-                        <RadioGroup
-                          defaultValue="url"
-                          value={targetType}
-                          onValueChange={setTargetType}
-                          className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="url" id="url" />
-                            <Label
-                              htmlFor="url"
-                              className="flex items-center gap-2 cursor-pointer"
-                            >
-                              <Globe className="h-5 w-5" />
-                              URL / Domain
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="bulk" id="bulk" />
-                            <Label
-                              htmlFor="bulk"
-                              className="flex items-center gap-2 cursor-pointer"
-                            >
-                              <FileText className="h-5 w-5" />
-                              Bulk Scan (CSV)
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
-
-                      <Separator />
-
-                      {targetType === "url" && (
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="url-input">URL or Domain</Label>
-                            <Input
-                              id="url-input"
-                              placeholder="https://example.com"
-                              value={targetUrl}
-                              onChange={(e) => setTargetUrl(e.target.value)}
-                            />
-                            <p className="text-sm text-muted-foreground">
-                              Enter a full URL (https://example.com/path) or
-                              domain name (example.com)
-                            </p>
-                          </div>
+                    <div className="space-y-2 text-sm">
+                      {scanProgress >= 10 && (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-green-500" />
+                          <span>Port scanning completed</span>
                         </div>
                       )}
-
-                      {targetType === "package" && (
-                        <div className="space-y-4">
-                          <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
-                            <div className="flex flex-col items-center justify-center gap-2">
-                              <Upload className="h-8 w-8 text-muted-foreground" />
-                              <h3 className="font-medium">
-                                Upload Software Package
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                Drag and drop your file here, or click to browse
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                Supported formats: ZIP, JAR, WAR, EXE, APK, PY,
-                                JS
-                              </p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="mt-2"
-                              >
-                                Browse Files
-                              </Button>
-                            </div>
-                          </div>
+                      {scanProgress >= 30 && (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-green-500" />
+                          <span>Technology stack detection completed</span>
                         </div>
                       )}
-
-                      {targetType === "bulk" && (
-                        <div className="space-y-4">
-                          <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
-                            <div className="flex flex-col items-center justify-center gap-2">
-                              <Upload className="h-8 w-8 text-muted-foreground" />
-                              <h3 className="font-medium">Upload CSV File</h3>
-                              <p className="text-sm text-muted-foreground">
-                                Upload a CSV file with one URL or domain per
-                                line
-                              </p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="mt-2"
-                              >
-                                Browse Files
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
-                            <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                            <p className="text-sm">This is not yet available</p>
-                          </div>
+                      {scanProgress >= 50 && scanProgress < 85 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                          <span>Vulnerability detection in progress</span>
+                        </div>
+                      ) : scanProgress >= 85 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-green-500" />
+                          <span>Vulnerability detection completed</span>
+                        </div>
+                      ) : null}
+                      {scanProgress < 85 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-muted" />
+                          <span>SSL/TLS check pending</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                          <span>SSL/TLS check in progress</span>
                         </div>
                       )}
                     </div>
-                  </TabsContent>
 
-                  <TabsContent value="options" className="space-y-6">
-                    <div className="space-y-6">
+                    <div className="flex justify-center">
+                      <Button variant="destructive" onClick={handleCancelScan}>
+                        Cancel Scan
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Tabs defaultValue="target" className="space-y-6">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="target">Target</TabsTrigger>
+                      <TabsTrigger value="options">Scan Options</TabsTrigger>
+                      <TabsTrigger value="modules">Modules</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="target" className="space-y-6">
                       <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Scan Type</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <button
-                            onClick={() => setScanType("Passive")}
-                            className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                              scanType === "Passive"
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border/50 hover:border-border hover:bg-card"
-                            }`}
+                        <div>
+                          <h3 className="text-lg font-medium mb-2">
+                            Target Type
+                          </h3>
+                          <RadioGroup
+                            defaultValue="url"
+                            value={targetType}
+                            onValueChange={setTargetType}
+                            className="grid grid-cols-1 md:grid-cols-3 gap-4"
                           >
-                            <div className="p-3 rounded-full bg-primary/10">
-                              <Search className="h-6 w-6 text-primary" />
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="url" id="url" />
+                              <Label
+                                htmlFor="url"
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <Globe className="h-5 w-5" />
+                                URL / Domain
+                              </Label>
                             </div>
-                            <div className="text-center">
-                              <h4 className="font-medium">Vulnerability Scan</h4>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Find Vulnerabilities
-                              </p>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="bulk" id="bulk" />
+                              <Label
+                                htmlFor="bulk"
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <FileText className="h-5 w-5" />
+                                Bulk Scan (CSV)
+                              </Label>
                             </div>
-                          </button>
-
-                          <button
-                            onClick={() => setScanType("Active")}
-                            className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                              scanType === "Active"
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border/50 hover:border-border hover:bg-card"
-                            }`}
-                          >
-                            <div className="p-3 rounded-full bg-primary/10">
-                              <FileText className="h-6 w-6 text-primary" />
-                            </div>
-                            <div className="text-center">
-                              <h4 className="font-medium">Leaks Scan</h4>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Get Data Leaked on internet
-                              </p>
-                            </div>
-                          </button>
-
-                          <button
-                            onClick={() => setScanType("Hybrid")}
-                            className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                              scanType === "Hybrid"
-                                ? "border-primary bg-primary/10 text-primary"
-                                : "border-border/50 hover:border-border hover:bg-card"
-                            }`}
-                          >
-                            <div className="p-3 rounded-full bg-primary/10">
-                              <Shield className="h-6 w-6 text-primary" />
-                            </div>
-                            <div className="text-center">
-                              <h4 className="font-medium">Both (Hybrid)</h4>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Comprehensive (slower but thorough)
-                              </p>
-                            </div>
-                          </button>
+                          </RadioGroup>
                         </div>
 
-                        {scanType === "Passive" || scanType === "Hybrid" ? (
-                          <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
-                            <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                            <p className="text-sm">
-                              Active scans may affect network performance and
-                              trigger security alerts on the target system.
-                            </p>
+                        <Separator />
+
+                        {targetType === "url" && (
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="url-input">URL or Domain</Label>
+                              <Input
+                                id="url-input"
+                                placeholder="https://example.com"
+                                value={targetUrl}
+                                onChange={(e) => setTargetUrl(e.target.value)}
+                              />
+                              <p className="text-sm text-muted-foreground">
+                                Enter a full URL (https://example.com/path) or
+                                domain name (example.com)
+                              </p>
+                            </div>
                           </div>
-                        ) : null}
+                        )}
+
+                        {targetType === "package" && (
+                          <div className="space-y-4">
+                            <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
+                              <div className="flex flex-col items-center justify-center gap-2">
+                                <Upload className="h-8 w-8 text-muted-foreground" />
+                                <h3 className="font-medium">
+                                  Upload Software Package
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                  Drag and drop your file here, or click to
+                                  browse
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Supported formats: ZIP, JAR, WAR, EXE, APK,
+                                  PY, JS
+                                </p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="mt-2"
+                                >
+                                  Browse Files
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {targetType === "bulk" && (
+                          <div className="space-y-4">
+                            <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center">
+                              <div className="flex flex-col items-center justify-center gap-2">
+                                <Upload className="h-8 w-8 text-muted-foreground" />
+                                <h3 className="font-medium">Upload CSV File</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  Upload a CSV file with one URL or domain per
+                                  line
+                                </p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="mt-2"
+                                >
+                                  Browse Files
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
+                              <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                              <p className="text-sm">
+                                This is not yet available
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    </TabsContent>
 
-                      <Separator />
+                    <TabsContent value="options" className="space-y-6">
+                      <div className="space-y-6">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-medium">Scan Type</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button
+                              onClick={() => setScanType("Passive")}
+                              className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                                scanType === "Passive"
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border/50 hover:border-border hover:bg-card"
+                              }`}
+                            >
+                              <div className="p-3 rounded-full bg-primary/10">
+                                <Search className="h-6 w-6 text-primary" />
+                              </div>
+                              <div className="text-center">
+                                <h4 className="font-medium">
+                                  Vulnerability Scan
+                                </h4>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Find Vulnerabilities
+                                </p>
+                              </div>
+                            </button>
 
-                      {/* <div className="space-y-4">
+                            <button
+                              onClick={() => setScanType("Active")}
+                              className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                                scanType === "Active"
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border/50 hover:border-border hover:bg-card"
+                              }`}
+                            >
+                              <div className="p-3 rounded-full bg-primary/10">
+                                <FileText className="h-6 w-6 text-primary" />
+                              </div>
+                              <div className="text-center">
+                                <h4 className="font-medium">Leaks Scan</h4>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Get Data Leaked on internet
+                                </p>
+                              </div>
+                            </button>
+
+                            <button
+                              onClick={() => setScanType("Hybrid")}
+                              className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                                scanType === "Hybrid"
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border/50 hover:border-border hover:bg-card"
+                              }`}
+                            >
+                              <div className="p-3 rounded-full bg-primary/10">
+                                <Shield className="h-6 w-6 text-primary" />
+                              </div>
+                              <div className="text-center">
+                                <h4 className="font-medium">Both (Hybrid)</h4>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Comprehensive (slower but thorough)
+                                </p>
+                              </div>
+                            </button>
+                          </div>
+
+                          {scanType === "Passive" || scanType === "Hybrid" ? (
+                            <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
+                              <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                              <p className="text-sm">
+                                Active scans may affect network performance and
+                                trigger security alerts on the target system.
+                              </p>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <Separator />
+
+                        {/* <div className="space-y-4">
                         <h3 className="text-lg font-medium">Scan Timeout</h3>
                         <Select value={scanTimeout} onValueChange={setScanTimeout}>
                           <SelectTrigger>
@@ -479,10 +558,10 @@ export default function ScanPage() {
                           Maximum time the scan will run before automatically stopping
                         </p>
                       </div> */}
-                    </div>
-                  </TabsContent>
+                      </div>
+                    </TabsContent>
 
-                  {/* <TabsContent value="modules" className="space-y-6">
+                    {/* <TabsContent value="modules" className="space-y-6">
                     <div className="space-y-6">
                       <div className="space-y-4">
                         <h3 className="text-lg font-medium">Scan Modules</h3>
@@ -595,33 +674,39 @@ export default function ScanPage() {
                     </div>
                   </TabsContent> */}
 
-                  <div className="flex justify-end space-x-4 pt-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setTargetUrl("");
-                        setScanType("Passive");
-                        setScanDepth(50);
-                        setSelectedModules({
-                          portScan: true,
-                          vulnDetection: true,
-                          techStack: true,
-                          sslCheck: true,
-                          dnsEnum: false,
-                          dirBruteforce: false,
-                        });
-                      }}
-                    >
-                      Reset
-                    </Button>
-                    <Button onClick={handleStartScan} className="bg-[#0080ff] hover:bg-[#0060cc]">Start Scan</Button>
-                  </div>
-                </Tabs>
-              )}
-            </CardContent>
-          </Card>
-        </main>
+                    <div className="flex justify-end space-x-4 pt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setTargetUrl("");
+                          setScanType("Passive");
+                          setScanDepth(50);
+                          setSelectedModules({
+                            portScan: true,
+                            vulnDetection: true,
+                            techStack: true,
+                            sslCheck: true,
+                            dnsEnum: false,
+                            dirBruteforce: false,
+                          });
+                        }}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        onClick={handleStartScan}
+                        className="bg-[#0080ff] hover:bg-[#0060cc]"
+                      >
+                        Start Scan
+                      </Button>
+                    </div>
+                  </Tabs>
+                )}
+              </CardContent>
+            </Card>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
