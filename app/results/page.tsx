@@ -126,37 +126,37 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div className="min-h-screen bg-[#121212] text-white flex">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a1a1a] border-r border-gray-800 transform transition-transform duration-200 ease-in-out ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <div className="flex h-16 items-center border-b border-border/40 px-6">
+        <div className="flex h-16 items-center border-b border-gray-800 px-6">
           <Link href="/" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
+            <Shield className="h-6 w-6 text-[#0080ff]" />
             <span className="text-lg font-bold">SecureScanX</span>
           </Link>
         </div>
         <nav className="space-y-1 px-3 py-4">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
           >
             <BarChart3 className="h-5 w-5" />
             Dashboard
           </Link>
           <Link
             href="/scans"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
           >
             <Search className="h-5 w-5" />
             Scan
           </Link>
           <Link
             href="/results"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-primary/10 text-primary"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
           >
             <FileText className="h-5 w-5" />
             Results
@@ -174,10 +174,10 @@ export default function ResultsPage() {
       {/* Main Content */}
       <div className="flex-1 md:ml-64">
         {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-4">
             <button
-              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium border border-gray-700 hover:bg-gray-800 h-10 w-10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -194,7 +194,7 @@ export default function ResultsPage() {
 
             <div className="flex items-center gap-4">
               <Link href="/scans">
-                <Button size="sm">
+                <Button size="sm" className="bg-[#0080ff] hover:bg-[#0060cc]">
                   <Search className="h-4 w-4 mr-2" />
                   New Scan
                 </Button>
@@ -205,12 +205,12 @@ export default function ResultsPage() {
 
         {/* Results Content */}
         <main className="container py-6">
-          <Card>
+          <Card className="bg-[#1a1a1a] border-gray-800">
             <CardHeader>
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <CardTitle>Scan Results</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-white">Scan Results</CardTitle>
+                  <CardDescription className="text-gray-400">
                     View and analyze your security scan results
                   </CardDescription>
                 </div>
@@ -294,7 +294,7 @@ export default function ResultsPage() {
                   </div>
 
                   <div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-400">
                       Critical
                     </div>
                     <div className="flex items-center gap-2">
@@ -305,7 +305,7 @@ export default function ResultsPage() {
                   </div>
 
                   <div>
-                    <div className="text-sm text-muted-foreground">High</div>
+                    <div className="text-sm text-gray-400">High</div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-orange-500">
                         {extra?.high || 0}
@@ -314,7 +314,7 @@ export default function ResultsPage() {
                   </div>
 
                   <div>
-                    <div className="text-sm text-muted-foreground">Medium</div>
+                    <div className="text-sm text-gray-400">Medium</div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-yellow-500">
                         {extra?.medium || 0}
@@ -323,7 +323,7 @@ export default function ResultsPage() {
                   </div>
 
                   <div>
-                    <div className="text-sm text-muted-foreground">Low</div>
+                    <div className="text-sm text-gray-400">Low</div>
                     <div className="flex items-center gap-2">
                       <div className="text-2xl font-bold text-green-500">
                         {extra?.low || 0}

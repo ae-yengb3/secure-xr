@@ -117,37 +117,37 @@ export default function ScanPage() {
   }, [scans]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div className="min-h-screen bg-[#121212] text-white flex">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border/40 transform transition-transform duration-200 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a1a1a] border-r border-gray-800 transform transition-transform duration-200 ease-in-out ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <div className="flex h-16 items-center border-b border-border/40 px-6">
+        <div className="flex h-16 items-center border-b border-gray-800 px-6">
           <Link href="/" className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
+            <Shield className="h-6 w-6 text-[#0080ff]" />
             <span className="text-lg font-bold">SecureScanX</span>
           </Link>
         </div>
         <nav className="space-y-1 px-3 py-4">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
           >
             <BarChart3 className="h-5 w-5" />
             Dashboard
           </Link>
           <Link
             href="/scans"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-primary/10 text-primary"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium bg-[#0080ff]/20 text-[#0080ff]"
           >
             <Search className="h-5 w-5" />
             Scans
           </Link>
           <Link
             href="/results"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 hover:bg-accent hover:text-foreground"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800"
           >
             <FileText className="h-5 w-5" />
             Results
@@ -165,10 +165,10 @@ export default function ScanPage() {
       {/* Main Content */}
       <div className="flex-1 md:ml-64">
         {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-4">
             <button
-              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              className="inline-flex md:hidden items-center justify-center rounded-md text-sm font-medium border border-gray-700 hover:bg-gray-800 h-10 w-10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -195,10 +195,10 @@ export default function ScanPage() {
 
         {/* Scan Content */}
         <main className="container py-6">
-          <Card>
+          <Card className="bg-[#1a1a1a] border-gray-800">
             <CardHeader>
-              <CardTitle>Start a New Security Scan</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Start a New Security Scan</CardTitle>
+              <CardDescription className="text-gray-400">
                 Configure your scan settings to detect vulnerabilities in your
                 target
               </CardDescription>
@@ -614,7 +614,7 @@ export default function ScanPage() {
                     >
                       Reset
                     </Button>
-                    <Button onClick={handleStartScan}>Start Scan</Button>
+                    <Button onClick={handleStartScan} className="bg-[#0080ff] hover:bg-[#0060cc]">Start Scan</Button>
                   </div>
                 </Tabs>
               )}
