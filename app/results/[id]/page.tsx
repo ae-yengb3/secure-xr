@@ -218,7 +218,7 @@ export default function ScanResultDetail({
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-[#121212] text-white flex">
+      <div className="min-h-screen w-full bg-[#121212] text-white flex">
         {/* Sidebar for desktop */}
         <Sidebar className="hidden md:flex border-r border-gray-800">
           <SidebarHeader className="p-4 border-b border-gray-800">
@@ -320,7 +320,7 @@ export default function ScanResultDetail({
       </div>
 
         {/* Main Content */}
-        <div className="flex-1 md:ml-64">
+        <div className="flex-1">
         {/* Header */}
         <header className="sticky top-0 z-40 border-b border-gray-800 bg-[#1a1a1a]/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-4">
