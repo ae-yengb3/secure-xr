@@ -73,7 +73,7 @@ export default function DashboardPage() {
     if (reports) {
       const lastReport = reports[reports.length - 1];
 
-      setScanResults([...lastReport.alerts].splice(0, 5));
+      setScanResults([...(lastReport?.alerts || [])].splice(0, 5));
       setLastReport(lastReport);
     }
   }, [reports]);
