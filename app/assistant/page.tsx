@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAppSelector, useAppDispatch } from "@/lib/hook";
+import { getReports } from "@/lib/utils/scan";
 import {
   Shield,
   Bot,
@@ -48,6 +50,14 @@ type Report = {
   date: string;
 };
 
+type VulnerabilityResult = {
+  id: string;
+  name: string;
+  risk: string;
+  description: string;
+  url: string;
+};
+
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/scans", label: "Scans", icon: Search },
@@ -66,13 +76,30 @@ export default function AssistantPage() {
       timestamp: new Date(),
     },
   ]);
-  const [selectedReports, setSelectedReports] = useState<string[]>([]);
+  const [selectedVulns, setSelectedVulns] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const { reports } = useAppSelector((state) => state.scan);
 
-  const availableReports: Report[] = [
-    { id: "1", url: "example.com", vulnerabilities: 12, date: "2024-01-15" },
-    { id: "2", url: "test-app.vercel.app", vulnerabilities: 3, date: "2024-01-14" },
-    { id: "3", url: "api.myservice.com", vulnerabilities: 8, date: "2024-01-13" },
-  ];
+  useEffect(() => {
+    dispatch(getReports());
+  }, [dispatch]);
+
+  const availableReports = reports?.map((report, index) => ({
+    id: index.toString(),
+    url: report.url,
+    vulnerabilities: report.vulnerabilities,
+    date: new Date(report.start_time).toLocaleDateString(),
+  })) || [];
+
+  const vulnerabilities = reports?.flatMap((report) => 
+    report.alerts?.map((alert) => ({
+      id: alert.id,
+      name: alert.alert_name,
+      risk: alert.risk,
+      description: alert.description,
+      url: alert.url,
+    })) || []
+  ) || [];
 
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return;
@@ -91,7 +118,7 @@ export default function AssistantPage() {
       const aiResponse = {
         id: chatHistory.length + 2,
         type: "ai" as const,
-        message: generateAIResponse(chatMessage, selectedReports),
+        message: generateAIResponse(chatMessage, selectedVulns),
         timestamp: new Date(),
       };
       setChatHistory(prev => [...prev, aiResponse]);
@@ -108,11 +135,11 @@ export default function AssistantPage() {
     return responses[Math.floor(Math.random() * responses.length)];
   };
 
-  const toggleReportSelection = (reportId: string) => {
-    setSelectedReports(prev => 
-      prev.includes(reportId) 
-        ? prev.filter(id => id !== reportId)
-        : [...prev, reportId]
+  const toggleVulnSelection = (vulnId: string) => {
+    setSelectedVulns(prev => 
+      prev.includes(vulnId) 
+        ? prev.filter(id => id !== vulnId)
+        : [...prev, vulnId]
     );
   };
 
@@ -176,33 +203,45 @@ export default function AssistantPage() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <Card className="lg:col-span-1">
                 <CardHeader>
-                  <CardTitle className="text-sm">Select Reports</CardTitle>
+                  <CardTitle className="text-sm">Vulnerabilities</CardTitle>
                   <CardDescription className="text-xs">
-                    Choose reports to discuss with AI
+                    All detected security issues
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  {availableReports.map((report) => (
-                    <div
-                      key={report.id}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedReports.includes(report.id)
-                          ? "border-[#0080ff] bg-[#0080ff]/10"
-                          : "border-gray-700 hover:border-gray-600"
-                      }`}
-                      onClick={() => toggleReportSelection(report.id)}
-                    >
-                      <div className="font-medium text-sm">{report.url}</div>
-                      <div className="text-xs text-gray-400">
-                        {report.vulnerabilities} vulnerabilities
-                      </div>
-                      <div className="text-xs text-gray-500">{report.date}</div>
+                <CardContent>
+                  <ScrollArea className="h-[calc(100vh-12rem)]">
+                    <div className="space-y-2">
+                      {vulnerabilities?.map((vuln) => (
+                        <div
+                          key={vuln.id}
+                          className={`p-2 rounded border cursor-pointer transition-colors ${
+                            selectedVulns.includes(vuln.id)
+                              ? "border-[#0080ff] bg-[#0080ff]/10"
+                              : "border-gray-700 hover:border-gray-600"
+                          }`}
+                          onClick={() => toggleVulnSelection(vuln.id)}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="font-medium text-xs">{vuln.name}</div>
+                            <div className={`text-xs px-1.5 py-0.5 rounded ${
+                              vuln.risk === "Critical" ? "bg-red-500/20 text-red-400" :
+                              vuln.risk === "High" ? "bg-orange-500/20 text-orange-400" :
+                              vuln.risk === "Medium" ? "bg-yellow-500/20 text-yellow-400" :
+                              "bg-green-500/20 text-green-400"
+                            }`}>
+                              {vuln.risk}
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-400 mb-1">{vuln.description.length > 50 ? vuln.description.substring(0, 50) + '...' : vuln.description}</div>
+                          <div className="text-xs text-gray-500">{vuln.url}</div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </ScrollArea>
                 </CardContent>
               </Card>
 
-              <Card className="lg:col-span-3">
+              <Card className="lg:col-span-3 flex flex-col h-[calc(100vh-8rem)]">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Bot className="h-5 w-5 text-[#0080ff]" />
@@ -210,15 +249,15 @@ export default function AssistantPage() {
                   </CardTitle>
                   <CardDescription>
                     Ask questions about your security reports
-                    {selectedReports.length > 0 && (
+                    {selectedVulns.length > 0 && (
                       <span className="ml-2 text-[#0080ff]">
-                        ({selectedReports.length} report{selectedReports.length !== 1 ? 's' : ''} selected)
+                        ({selectedVulns.length} vulnerability{selectedVulns.length !== 1 ? 'ies' : 'y'} selected)
                       </span>
                     )}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <ScrollArea className="h-96 w-full border rounded-lg p-4 bg-[#0a0a0a]">
+                <CardContent className="flex flex-col flex-1 space-y-4">
+                  <ScrollArea className="flex-1 w-full border rounded-lg p-4 bg-[#0a0a0a]">
                     <div className="space-y-4">
                       {chatHistory.map((chat) => (
                         <div
@@ -280,9 +319,9 @@ export default function AssistantPage() {
                     </Button>
                   </div>
 
-                  {selectedReports.length === 0 && (
+                  {selectedVulns.length === 0 && (
                     <div className="text-center p-4 text-gray-400 text-sm">
-                      Select one or more reports from the sidebar to get more specific insights
+                      Select one or more vulnerabilities from the sidebar to get more specific insights
                     </div>
                   )}
                 </CardContent>
