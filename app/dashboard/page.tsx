@@ -351,11 +351,9 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between">
-                          <div className="font-medium">{alert.alert}</div>
+                          <div className="font-medium">{alert.alert_name}</div>
                           <div className="text-xs text-gray-400">
-                            {new Date(
-                              lastReport?.start_time || 0
-                            ).toLocaleString()}
+                            {moment(lastReport?.start_time).fromNow()}
                           </div>
                         </div>
                         <div
@@ -535,11 +533,9 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                          <div className="font-medium">{alert.alert}</div>
+                          <div className="font-medium">{alert.alert_name}</div>
                           <div className="text-xs text-gray-400">
-                            {new Date(
-                              lastReport?.start_time || ""
-                            ).toUTCString()}
+                            {moment(lastReport?.start_time).fromNow()}
                           </div>
                         </div>
                         <div
