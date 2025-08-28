@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Shield,
   AlertTriangle,
@@ -27,8 +27,8 @@ import { useAppSelector, useAppDispatch } from "@/lib/hook";
 import { useRouter } from "next/navigation";
 import { getMe, loginUser } from "@/lib/utils/user";
 import { getReports, getScans } from "@/lib/utils/scan";
-import { logout } from "@/lib/features/userSlice";
 import { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
+import moment from "moment";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -273,7 +273,7 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {liveScans?.map((scan) => (
+                  {liveScans?.map((scan: any) => (
                     <div
                       // @ts-ignore
                       key={scan.scan_id}
@@ -293,7 +293,10 @@ export default function DashboardPage() {
                         {/* @ts-ignore */}
                         <span>Progress: {scan.progress}%</span>
                         {/* @ts-ignore */}
-                        <span>Started: {scan.start_time}</span>
+                        <span>
+                          Started:{" "}
+                          {moment(scan?.start_time || new Date()).fromNow()}
+                        </span>
                       </div>
                       <Progress
                         // @ts-ignore
@@ -476,7 +479,7 @@ export default function DashboardPage() {
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              {new Date(scan?.start_time).toUTCString()}
+                              {moment(scan?.start_time).fromNow()}
                             </td>
                             <td className="px-4 py-3">
                               {/* {scan.issues !== "-" && (

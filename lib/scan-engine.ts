@@ -38,6 +38,7 @@ export interface ScanResult{
   vulnerabilities: number
   progress: number
   start_time: string
+  end_time: string
   critical: number
   high: number
   medium: number

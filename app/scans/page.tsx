@@ -9,7 +9,6 @@ import {
   X,
   Upload,
   Globe,
-  Package,
   AlertTriangle,
   Shield,
   FileText,
@@ -29,15 +28,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
@@ -74,17 +64,9 @@ export default function ScanPage() {
   const [scanType, setScanType] = useState("Vuln");
   const [targetType, setTargetType] = useState("url");
   const [targetUrl, setTargetUrl] = useState("");
-  const [scanDepth, setScanDepth] = useState(50);
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
-  const [selectedModules, setSelectedModules] = useState({
-    portScan: true,
-    vulnDetection: true,
-    techStack: true,
-    sslCheck: true,
-    dnsEnum: false,
-    dirBruteforce: false,
-  });
+  const [scanningRemark, setScanningRemark] = useState("");
 
   const scans = useAppSelector((state) => state.scan.scans);
   const { user } = useAppSelector((state) => state.user);
@@ -95,13 +77,6 @@ export default function ScanPage() {
     }
   }, [user]);
 
-  const handleModuleToggle = (module: string) => {
-    setSelectedModules((prev) => ({
-      ...prev,
-      [module]: !prev[module as keyof typeof prev],
-    }));
-  };
-
   const handleStartScan = () => {
     const data = {
       scanType,
@@ -110,6 +85,7 @@ export default function ScanPage() {
 
     dispatch(startScan(data));
     setIsScanning(true);
+    dispatch(getScans());
   };
 
   const handleCancelScan = () => {
@@ -133,6 +109,7 @@ export default function ScanPage() {
       if (latestScan?.progress < 100) {
         setIsScanning(true);
         setScanProgress(latestScan.progress);
+        setScanningRemark(latestScan.remark);
       }
     }
   }, [scans]);
@@ -309,40 +286,11 @@ export default function ScanPage() {
                     </div>
 
                     <div className="space-y-2 text-sm">
-                      {scanProgress >= 10 && (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500" />
-                          <span>Port scanning completed</span>
-                        </div>
-                      )}
-                      {scanProgress >= 30 && (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500" />
-                          <span>Technology stack detection completed</span>
-                        </div>
-                      )}
-                      {scanProgress >= 50 && scanProgress < 85 ? (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                          <span>Vulnerability detection in progress</span>
-                        </div>
-                      ) : scanProgress >= 85 ? (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500" />
-                          <span>Vulnerability detection completed</span>
-                        </div>
+                      {scanningRemark ? (
+                        <p className="text-center text-muted-foreground">
+                          {scanningRemark}
+                        </p>
                       ) : null}
-                      {scanProgress < 85 ? (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-muted" />
-                          <span>SSL/TLS check pending</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                          <span>SSL/TLS check in progress</span>
-                        </div>
-                      )}
                     </div>
 
                     <div className="flex justify-center">
@@ -407,9 +355,14 @@ export default function ScanPage() {
                               <Upload className="h-8 w-8 text-muted-foreground" />
                               <h3 className="font-medium">Upload CSV File</h3>
                               <p className="text-sm text-muted-foreground">
-                                Upload a CSV file with one URL or domain per line
+                                Upload a CSV file with one URL or domain per
+                                line
                               </p>
-                              <Button variant="outline" size="sm" className="mt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-2"
+                              >
                                 Browse Files
                               </Button>
                             </div>
@@ -490,8 +443,9 @@ export default function ScanPage() {
                         <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
                           <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                           <p className="text-sm">
-                            Vulnerability Scan scans may affect network performance and
-                            trigger security alerts on the target system.
+                            Vulnerability Scan scans may affect network
+                            performance and trigger security alerts on the
+                            target system.
                           </p>
                         </div>
                       ) : null}
@@ -503,15 +457,6 @@ export default function ScanPage() {
                         onClick={() => {
                           setTargetUrl("");
                           setScanType("Vuln");
-                          setScanDepth(50);
-                          setSelectedModules({
-                            portScan: true,
-                            vulnDetection: true,
-                            techStack: true,
-                            sslCheck: true,
-                            dnsEnum: false,
-                            dirBruteforce: false,
-                          });
                         }}
                       >
                         Reset
