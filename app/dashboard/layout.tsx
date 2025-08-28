@@ -17,6 +17,7 @@ import {
   X,
   User,
   ChevronDown,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,6 +85,7 @@ export default function DashboardLayout({
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/scans", label: "Scans", icon: Scan },
     { href: "/results", label: "Results", icon: FileBarChart },
+    { href: "/assistant", label: "AI Assistant", icon: Bot },
     // { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 

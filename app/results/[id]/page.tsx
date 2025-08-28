@@ -22,6 +22,7 @@ import {
   CheckCircle,
   LayoutDashboard,
   LogOut,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +61,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/scans", label: "Scans", icon: Search },
   { href: "/results", label: "Results", icon: FileText },
+  { href: "/assistant", label: "AI Assistant", icon: Bot },
 ];
 
 export default function ScanResultDetail({

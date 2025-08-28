@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   LogOut,
   BarChart3,
+  Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +61,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/scans", label: "Scans", icon: Search },
   { href: "/results", label: "Results", icon: FileText },
+  { href: "/assistant", label: "AI Assistant", icon: Bot },
 ];
 
 export default function ScanPage() {
@@ -233,6 +235,14 @@ export default function ScanPage() {
               >
                 <FileText className="h-5 w-5" />
                 <span>Results</span>
+              </Link>
+              <Link
+                href="/assistant"
+                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-800"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Bot className="h-5 w-5" />
+                <span>AI Assistant</span>
               </Link>
             </nav>
           </div>

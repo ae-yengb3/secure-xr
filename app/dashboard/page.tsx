@@ -96,10 +96,10 @@ export default function DashboardPage() {
 
   // Sample data for charts
   const vulnerabilityData = [
-    { name: "Critical", value: extra?.critical, color: "#ff3333" },
-    { name: "High", value: extra?.high, color: "#ff9933" },
-    { name: "Medium", value: extra?.medium, color: "#ffcc33" },
-    { name: "Low", value: extra?.low, color: "#0080ff" },
+    { name: "Critical", value: extra?.critical as number, color: "#ff3333" },
+    { name: "High", value: extra?.high as number, color: "#ff9933" },
+    { name: "Medium", value: extra?.medium as number, color: "#ffcc33" },
+    { name: "Low", value: extra?.low as number, color: "#0080ff" },
   ];
 
   return (
@@ -534,7 +534,9 @@ export default function DashboardPage() {
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                           <div className="font-medium">{alert.alert}</div>
                           <div className="text-xs text-gray-400">
-                            {new Date(lastReport?.start_time || "").toUTCString()}
+                            {new Date(
+                              lastReport?.start_time || ""
+                            ).toUTCString()}
                           </div>
                         </div>
                         <div
