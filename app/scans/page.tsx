@@ -71,7 +71,7 @@ export default function ScanPage() {
   const pathname = usePathname();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scanType, setScanType] = useState("Passive");
+  const [scanType, setScanType] = useState("Vuln");
   const [targetType, setTargetType] = useState("url");
   const [targetUrl, setTargetUrl] = useState("");
   const [scanDepth, setScanDepth] = useState(50);
@@ -429,9 +429,9 @@ export default function ScanPage() {
                       <h3 className="text-lg font-medium">Scan Type</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <button
-                          onClick={() => setScanType("Passive")}
+                          onClick={() => setScanType("Vuln")}
                           className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                            scanType === "Passive"
+                            scanType === "Vuln"
                               ? "border-primary bg-primary/10 text-primary"
                               : "border-border/50 hover:border-border hover:bg-card"
                           }`}
@@ -448,9 +448,9 @@ export default function ScanPage() {
                         </button>
 
                         <button
-                          onClick={() => setScanType("Active")}
+                          onClick={() => setScanType("Leak")}
                           className={`flex flex-col items-center gap-3 p-4 rounded-lg border ${
-                            scanType === "Active"
+                            scanType === "Leak"
                               ? "border-primary bg-primary/10 text-primary"
                               : "border-border/50 hover:border-border hover:bg-card"
                           }`}
@@ -486,11 +486,11 @@ export default function ScanPage() {
                         </button>
                       </div>
 
-                      {scanType === "Passive" || scanType === "Hybrid" ? (
+                      {scanType === "Vuln" || scanType === "Hybrid" ? (
                         <div className="flex items-center gap-2 p-3 rounded-md bg-yellow-500/10 text-yellow-500">
                           <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                           <p className="text-sm">
-                            Active scans may affect network performance and
+                            Vulnerability Scan scans may affect network performance and
                             trigger security alerts on the target system.
                           </p>
                         </div>
@@ -502,7 +502,7 @@ export default function ScanPage() {
                         variant="outline"
                         onClick={() => {
                           setTargetUrl("");
-                          setScanType("Passive");
+                          setScanType("Vuln");
                           setScanDepth(50);
                           setSelectedModules({
                             portScan: true,
