@@ -547,7 +547,7 @@ export default function ScanResultDetail({
                             <div className="flex-1 text-left">
                               <div className="font-medium">{vuln.name}</div>
                               <div className="text-sm text-muted-foreground">
-                                {vuln.alert} • {vuln.url}
+                                {vuln.alert_name} • {vuln.url}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">

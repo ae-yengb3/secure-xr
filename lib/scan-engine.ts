@@ -16,7 +16,7 @@ export interface VulnerabilityResult {
   url: string,
   reference: string,
   solution: string,
-  alert: string,
+  alert_name: string,
   param: string,
   attack: string,
   name: string,
