@@ -98,6 +98,8 @@ export default function AssistantPage() {
       risk: alert.risk,
       description: alert.description,
       url: alert.url,
+      marked_as_false_positive: alert.marked_as_false_positive,
+      resolved: alert.resolved,
     })) || []
   ) || [];
 
@@ -218,18 +220,36 @@ export default function AssistantPage() {
                             selectedVulns.includes(vuln.id)
                               ? "border-[#0080ff] bg-[#0080ff]/10"
                               : "border-gray-700 hover:border-gray-600"
+                          } ${
+                            vuln.resolved ? "opacity-60" : ""
+                          } ${
+                            vuln.marked_as_false_positive ? "opacity-40" : ""
                           }`}
                           onClick={() => toggleVulnSelection(vuln.id)}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <div className="font-medium text-xs">{vuln.name}</div>
-                            <div className={`text-xs px-1.5 py-0.5 rounded ${
-                              vuln.risk === "Critical" ? "bg-red-500/20 text-red-400" :
-                              vuln.risk === "High" ? "bg-orange-500/20 text-orange-400" :
-                              vuln.risk === "Medium" ? "bg-yellow-500/20 text-yellow-400" :
-                              "bg-green-500/20 text-green-400"
-                            }`}>
-                              {vuln.risk}
+                            <div className="flex gap-1">
+                              {vuln.resolved && (
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">
+                                  ✓
+                                </span>
+                              )}
+                              {vuln.marked_as_false_positive && (
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-500/20 text-gray-400">
+                                  FP
+                                </span>
+                              )}
+                              <div className={`text-xs px-1.5 py-0.5 rounded ${
+                                vuln.resolved || vuln.marked_as_false_positive
+                                  ? "bg-gray-500/20 text-gray-400"
+                                  : vuln.risk === "Critical" ? "bg-red-500/20 text-red-400" :
+                                  vuln.risk === "High" ? "bg-orange-500/20 text-orange-400" :
+                                  vuln.risk === "Medium" ? "bg-yellow-500/20 text-yellow-400" :
+                                  "bg-green-500/20 text-green-400"
+                              }`}>
+                                {vuln.risk}
+                              </div>
                             </div>
                           </div>
                           <div className="text-xs text-gray-400 mb-1">{vuln.description.length > 50 ? vuln.description.substring(0, 50) + '...' : vuln.description}</div>

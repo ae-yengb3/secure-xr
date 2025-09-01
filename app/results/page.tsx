@@ -486,6 +486,12 @@ export default function ResultsPage() {
                                 <CheckCircle className="h-3 w-3 text-green-500" />
                               )}
                               <span>{report?.vulnerabilities}</span>
+                              {report?.resolved_count > 0 && (
+                                <span className="text-xs text-green-500">({report.resolved_count} resolved)</span>
+                              )}
+                              {report?.false_positive_count > 0 && (
+                                <span className="text-xs text-gray-500">({report.false_positive_count} FP)</span>
+                              )}
                             </div>
                           ) : (
                             <div>-</div>

@@ -22,7 +22,9 @@ export interface VulnerabilityResult {
   attack: string,
   name: string,
   risk: "Critical" | "High" | "Medium" | "Low",
-  id: string
+  id: string,
+  marked_as_false_positive: boolean,
+  resolved: boolean,
 }
 
 export interface ScanExtra {
@@ -45,6 +47,8 @@ export interface ScanResult{
   medium: number
   low: number
   informational: number
+  resolved_count: number
+  false_positive_count: number
 }
 
 // export interface ScanResult {

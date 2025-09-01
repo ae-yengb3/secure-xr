@@ -10,6 +10,7 @@ import {
   Users,
   FileText,
   ArrowRight,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -336,29 +337,59 @@ export default function DashboardPage() {
                   {scanResults.map((alert) => (
                     <div
                       key={alert.id}
-                      className="bg-[#212121] p-3 rounded-lg flex items-start"
+                      className={`bg-[#212121] p-3 rounded-lg flex items-start ${
+                        alert.resolved ? "opacity-60" : ""
+                      } ${
+                        alert.marked_as_false_positive ? "opacity-40" : ""
+                      }`}
                     >
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
-                          alert.risk === "Critical"
+                          alert.resolved
+                            ? "bg-green-500/20 text-green-500"
+                            : alert.marked_as_false_positive
+                            ? "bg-gray-500/20 text-gray-500"
+                            : alert.risk === "Critical"
                             ? "bg-[#ff3333]/20 text-[#ff3333]"
                             : alert.risk === "High"
                             ? "bg-[#ff9933]/20 text-[#ff9933]"
                             : "bg-[#ffcc33]/20 text-[#ffcc33]"
                         }`}
                       >
-                        <AlertTriangle className="h-4 w-4" />
+                        {alert.resolved ? (
+                          <CheckCircle className="h-4 w-4" />
+                        ) : alert.marked_as_false_positive ? (
+                          <X className="h-4 w-4" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4" />
+                        )}
                       </div>
                       <div className="flex-1">
-                        <div className="flex justify-between">
-                          <div className="font-medium">{alert.alert_name}</div>
+                        <div className="flex justify-between items-start">
+                          <div className="flex flex-col">
+                            <div className="font-medium">{alert.alert_name}</div>
+                            <div className="flex gap-2 mt-1">
+                              {alert.resolved && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-500">
+                                  Resolved
+                                </span>
+                              )}
+                              {alert.marked_as_false_positive && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-500">
+                                  False Positive
+                                </span>
+                              )}
+                            </div>
+                          </div>
                           <div className="text-xs text-gray-400">
                             {moment(lastReport?.start_time).fromNow()}
                           </div>
                         </div>
                         <div
                           className={`text-xs mt-1 ${
-                            alert.risk === "Critical"
+                            alert.resolved || alert.marked_as_false_positive
+                              ? "text-gray-500"
+                              : alert.risk === "Critical"
                               ? "text-[#ff3333]"
                               : alert.risk === "High"
                               ? "text-[#ff9933]"
@@ -518,29 +549,59 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {scanResults.map((alert, i) => (
-                  <div key={i} className="bg-[#212121] p-4 rounded-lg">
+                  <div key={i} className={`bg-[#212121] p-4 rounded-lg ${
+                    alert.resolved ? "opacity-60" : ""
+                  } ${
+                    alert.marked_as_false_positive ? "opacity-40" : ""
+                  }`}>
                     <div className="flex items-start">
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
-                          alert.risk === "Critical"
+                          alert.resolved
+                            ? "bg-green-500/20 text-green-500"
+                            : alert.marked_as_false_positive
+                            ? "bg-gray-500/20 text-gray-500"
+                            : alert.risk === "Critical"
                             ? "bg-[#ff3333]/20 text-[#ff3333]"
                             : alert.risk === "High"
                             ? "bg-[#ff9933]/20 text-[#ff9933]"
                             : "bg-[#ffcc33]/20 text-[#ffcc33]"
                         }`}
                       >
-                        <AlertTriangle className="h-5 w-5" />
+                        {alert.resolved ? (
+                          <CheckCircle className="h-5 w-5" />
+                        ) : alert.marked_as_false_positive ? (
+                          <X className="h-5 w-5" />
+                        ) : (
+                          <AlertTriangle className="h-5 w-5" />
+                        )}
                       </div>
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                          <div className="font-medium">{alert.alert_name}</div>
+                          <div className="flex flex-col">
+                            <div className="font-medium">{alert.alert_name}</div>
+                            <div className="flex gap-2 mt-1">
+                              {alert.resolved && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-500">
+                                  Resolved
+                                </span>
+                              )}
+                              {alert.marked_as_false_positive && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-500">
+                                  False Positive
+                                </span>
+                              )}
+                            </div>
+                          </div>
                           <div className="text-xs text-gray-400">
                             {moment(lastReport?.start_time).fromNow()}
                           </div>
                         </div>
                         <div
                           className={`text-xs mt-1 mb-2 ${
-                            alert.risk === "Critical"
+                            alert.resolved || alert.marked_as_false_positive
+                              ? "text-gray-500"
+                              : alert.risk === "Critical"
                               ? "text-[#ff3333]"
                               : alert.risk === "High"
                               ? "text-[#ff9933]"
@@ -552,21 +613,6 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-400">
                           {alert.description}
                         </p>
-                        {/* <div className="flex gap-2 mt-3">
-                          <Button
-                            size="sm"
-                            className="bg-[#0080ff] hover:bg-[#0060cc]"
-                          >
-                            Resolve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-gray-700 hover:bg-gray-800"
-                          >
-                            Ignore
-                          </Button>
-                        </div> */}
                       </div>
                     </div>
                   </div>
