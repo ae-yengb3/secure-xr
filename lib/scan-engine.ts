@@ -4,6 +4,7 @@ export type SeverityLevel = "Critical" | "High" | "Medium" | "Low"
 
 export interface VulnerabilityResult {
   sourceid: string,
+  unique_id: string,
   other: string,
   method: string,
   evidence: string,
