@@ -640,14 +640,15 @@ export default function ScanResultDetail({
                               <div className="flex items-center gap-2">
                                 {getSeverityBadge(vuln.risk)}
                                 {getConfidenceBadge(vuln.confidence)}
-                                {vulnStates[vuln.id]?.resolved && (
-                                  <Badge className="bg-green-500/10 text-green-500">
+                                {(vulnStates[vuln.id]?.resolved || vuln.resolved) && (
+                                  <Badge className="bg-green-500/10 text-green-500 border-green-500/20">
+                                    <CheckCircle className="h-3 w-3 mr-1" />
                                     Resolved
                                   </Badge>
                                 )}
-                                {vulnStates[vuln.id]
-                                  ?.marked_as_false_positive && (
-                                  <Badge className="bg-gray-500/10 text-gray-500">
+                                {(vulnStates[vuln.id]?.marked_as_false_positive || vuln.marked_as_false_positive) && (
+                                  <Badge className="bg-orange-500/10 text-orange-500 border-orange-500/20">
+                                    <X className="h-3 w-3 mr-1" />
                                     False Positive
                                   </Badge>
                                 )}
