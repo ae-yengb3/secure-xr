@@ -714,8 +714,8 @@ export default function ScanResultDetail({
                                   <Copy className="h-3 w-3 mr-1" />
                                   Copy Details
                                 </Button>
-                                {!vulnStates[vuln.id]?.resolved &&
-                                  !vulnStates[vuln.id]
+                                {!vulnStates[vuln.unique_id]?.resolved &&
+                                  !vulnStates[vuln.unique_id]
                                     ?.marked_as_false_positive && (
                                     <>
                                       <Button
