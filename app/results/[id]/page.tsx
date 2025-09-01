@@ -224,16 +224,26 @@ export default function ScanResultDetail({
 
   const markResolved = async (resultId: string) => {
     try {
-      const response = await authenticatedFetch(`${serverUrl}/secure/mark-resolved/`, {
-        method: "POST",
-        body: JSON.stringify({ unique_id: resultId }),
-      });
+      const response = await authenticatedFetch(
+        `${serverUrl}/secure/mark-resolved/`,
+        {
+          method: "POST",
+          body: JSON.stringify({ unique_id: resultId }),
+        }
+      );
 
       if (response.ok) {
         setVulnStates((prev) => ({
           ...prev,
           [resultId]: { ...prev[resultId], resolved: true },
         }));
+        setFilteredReports(prev => 
+          prev.map(vuln => 
+            vuln.unique_id === resultId 
+              ? { ...vuln, resolved: true }
+              : vuln
+          )
+        );
         toast({
           title: "Marked as resolved",
           description: "The vulnerability has been marked as resolved",
@@ -250,16 +260,26 @@ export default function ScanResultDetail({
 
   const markFalsePositive = async (resultId: string) => {
     try {
-      const response = await authenticatedFetch(`${serverUrl}/secure/mark-false-positive/`, {
-        method: "POST",
-        body: JSON.stringify({ unique_id: resultId }),
-      });
+      const response = await authenticatedFetch(
+        `${serverUrl}/secure/mark-false-positive/`,
+        {
+          method: "POST",
+          body: JSON.stringify({ unique_id: resultId }),
+        }
+      );
 
       if (response.ok) {
         setVulnStates((prev) => ({
           ...prev,
           [resultId]: { ...prev[resultId], marked_as_false_positive: true },
         }));
+        setFilteredReports(prev => 
+          prev.map(vuln => 
+            vuln.unique_id === resultId 
+              ? { ...vuln, marked_as_false_positive: true }
+              : vuln
+          )
+        );
         toast({
           title: "Marked as false positive",
           description: "The vulnerability has been marked as false positive",
@@ -714,14 +734,17 @@ export default function ScanResultDetail({
                                   <Copy className="h-3 w-3 mr-1" />
                                   Copy Details
                                 </Button>
-                                {!vulnStates[vuln.unique_id]?.resolved &&
-                                  !vulnStates[vuln.unique_id]
-                                    ?.marked_as_false_positive && (
+                                {!vulnStates[vuln.id]?.resolved && 
+                                  !vulnStates[vuln.id]?.marked_as_false_positive &&
+                                  !vuln.resolved &&
+                                  !vuln.marked_as_false_positive && (
                                     <>
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => markResolved(vuln.unique_id)}
+                                        onClick={() =>
+                                          markResolved(vuln.unique_id)
+                                        }
                                       >
                                         Mark Resolved
                                       </Button>
