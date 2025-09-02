@@ -30,6 +30,7 @@ import { getMe, loginUser } from "@/lib/utils/user";
 import { getReports, getScans } from "@/lib/utils/scan";
 import { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import moment from "moment";
+import { wsManager } from "@/lib/utils/websocket";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -52,8 +53,15 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user) {
       router.push("/login");
+    } else if (user) {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+      wsManager.connect(token).catch(console.error);
     }
-  }, [user]);
+  }, [user, token]);
 
   useEffect(() => {
     if (!token) {
@@ -339,9 +347,7 @@ export default function DashboardPage() {
                       key={alert.id}
                       className={`bg-[#212121] p-3 rounded-lg flex items-start ${
                         alert.resolved ? "opacity-60" : ""
-                      } ${
-                        alert.marked_as_false_positive ? "opacity-40" : ""
-                      }`}
+                      } ${alert.marked_as_false_positive ? "opacity-40" : ""}`}
                     >
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
@@ -367,7 +373,9 @@ export default function DashboardPage() {
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col">
-                            <div className="font-medium">{alert.alert_name}</div>
+                            <div className="font-medium">
+                              {alert.alert_name}
+                            </div>
                             <div className="flex gap-2 mt-1">
                               {alert.resolved && (
                                 <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-500">
@@ -549,11 +557,12 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {scanResults.map((alert, i) => (
-                  <div key={i} className={`bg-[#212121] p-4 rounded-lg ${
-                    alert.resolved ? "opacity-60" : ""
-                  } ${
-                    alert.marked_as_false_positive ? "opacity-40" : ""
-                  }`}>
+                  <div
+                    key={i}
+                    className={`bg-[#212121] p-4 rounded-lg ${
+                      alert.resolved ? "opacity-60" : ""
+                    } ${alert.marked_as_false_positive ? "opacity-40" : ""}`}
+                  >
                     <div className="flex items-start">
                       <div
                         className={`p-1.5 rounded-full mr-3 ${
@@ -579,7 +588,9 @@ export default function DashboardPage() {
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                           <div className="flex flex-col">
-                            <div className="font-medium">{alert.alert_name}</div>
+                            <div className="font-medium">
+                              {alert.alert_name}
+                            </div>
                             <div className="flex gap-2 mt-1">
                               {alert.resolved && (
                                 <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-500">
