@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
+import WebSocketProvider from "@/components/WebSocketProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +27,9 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <StoreProvider>{children}</StoreProvider>
+          <StoreProvider>
+            <WebSocketProvider>{children}</WebSocketProvider>
+          </StoreProvider>
         </ThemeProvider>
       </body>
     </html>

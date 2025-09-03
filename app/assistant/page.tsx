@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/lib/hook";
 import { getReports } from "@/lib/utils/scan";
+import { addUserMessage, addAiMessage, setLoading } from "@/lib/features/chatSlice";
+import { chatWebSocketService } from "@/lib/utils/chatWebSocket";
 import {
   Shield,
   Bot,
@@ -36,12 +38,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 
-type ChatMessage = {
-  id: number;
-  type: "ai" | "user";
-  message: string;
-  timestamp: Date;
-};
+
 
 type Report = {
   id: string;
@@ -68,20 +65,22 @@ const navItems = [
 export default function AssistantPage() {
   const pathname = usePathname();
   const [chatMessage, setChatMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      type: "ai" as const,
-      message: "Hello! I'm your AI security assistant. I can help you analyze vulnerabilities and provide security recommendations. What would you like to know?",
-      timestamp: new Date(),
-    },
-  ]);
   const [selectedVulns, setSelectedVulns] = useState<string[]>([]);
   const dispatch = useAppDispatch();
   const { reports } = useAppSelector((state) => state.scan);
+  const { messages: chatHistory, loading: chatLoading } = useAppSelector((state) => state.chat);
+  const { token } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getReports());
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Set up chat message handler
+    chatWebSocketService.setupMessageHandler((message) => {
+      dispatch(addAiMessage(message));
+      dispatch(setLoading(false));
+    });
   }, [dispatch]);
 
   const availableReports = reports?.map((report, index) => ({
@@ -106,36 +105,26 @@ export default function AssistantPage() {
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return;
 
-    const userMessage = {
-      id: chatHistory.length + 1,
-      type: "user" as const,
-      message: chatMessage,
-      timestamp: new Date(),
-    };
-
-    setChatHistory(prev => [...prev, userMessage]);
+    const message = chatMessage;
     setChatMessage("");
+    
+    // Add user message to chat
+    dispatch(addUserMessage(message));
+    dispatch(setLoading(true));
+    
+    // Get selected vulnerabilities data with full details
+    const selectedVulnData = vulnerabilities.filter(vuln => 
+      selectedVulns.includes(vuln.id)
+    );
 
-    setTimeout(() => {
-      const aiResponse = {
-        id: chatHistory.length + 2,
-        type: "ai" as const,
-        message: generateAIResponse(chatMessage, selectedVulns),
-        timestamp: new Date(),
-      };
-      setChatHistory(prev => [...prev, aiResponse]);
-    }, 1000);
+    // Send message via WebSocket
+    chatWebSocketService.sendMessage(message, selectedVulnData, {
+      reports: reports || [],
+      allVulnerabilities: vulnerabilities
+    });
   };
 
-  const generateAIResponse = (message: string, reports: string[]) => {
-    const responses = [
-      "Based on the selected reports, I can see several critical vulnerabilities that need immediate attention. The SQL injection vulnerability poses the highest risk.",
-      "The scan results show a mix of security issues. I recommend prioritizing the critical and high-severity vulnerabilities first.",
-      "Looking at the vulnerability patterns across your reports, there seems to be a common theme around input validation issues.",
-      "The selected reports indicate good security posture overall, but there are some areas for improvement in SSL/TLS configuration.",
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
+
 
   const toggleVulnSelection = (vulnId: string) => {
     setSelectedVulns(prev => 
@@ -302,7 +291,7 @@ export default function AssistantPage() {
                           >
                             <p className="text-sm">{chat.message}</p>
                             <p className="text-xs opacity-70 mt-1">
-                              {chat.timestamp.toLocaleTimeString()}
+                              {chat.timestamp}
                             </p>
                           </div>
                           {chat.type === "user" && (
@@ -332,10 +321,14 @@ export default function AssistantPage() {
                     />
                     <Button
                       onClick={handleSendMessage}
-                      disabled={!chatMessage.trim()}
+                      disabled={!chatMessage.trim() || chatLoading}
                       className="bg-[#0080ff] hover:bg-[#0060cc] px-4"
                     >
-                      <Send className="h-4 w-4" />
+                      {chatLoading ? (
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
 

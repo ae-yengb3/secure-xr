@@ -1,13 +1,15 @@
 import { configureStore, applyMiddleware, compose } from '@reduxjs/toolkit'
 import userReducer from './features/userSlice'
 import scanReducer from './features/scanSlice'
+import chatReducer from './features/chatSlice'
 
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
             user: userReducer,
-            scan: scanReducer
+            scan: scanReducer,
+            chat: chatReducer
         },
         devTools: true  
     })
