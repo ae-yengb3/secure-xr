@@ -6,11 +6,11 @@ export class ChatWebSocketService {
 
   setupMessageHandler(onMessage: (message: string) => void): void {
     this.onMessageCallback = onMessage;
-    
+
     // Set up chat message handler
     wsManager.onMessage('chat_response', (data) => {
-      if (data.response && this.onMessageCallback) {
-        this.onMessageCallback(data.response);
+      if (data.message && this.onMessageCallback) {
+        this.onMessageCallback(data.message);
       }
     });
   }

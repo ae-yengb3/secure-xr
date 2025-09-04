@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ChatMessage } from "../utils/chat";
+import moment from "moment";
 
 export type ChatState = {
   messages: ChatMessage[];
@@ -13,7 +14,7 @@ const initialState: ChatState = {
       id: 1,
       type: "ai" as const,
       message: "Hello! I'm your AI security assistant. I can help you analyze vulnerabilities and provide security recommendations. What would you like to know?",
-      timestamp: new Date().toISOString(),
+      timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
     },
   ],
   loading: false,
@@ -29,7 +30,7 @@ export const chatSlice = createSlice({
         id: state.messages.length + 1,
         type: "user",
         message: action.payload,
-        timestamp: new Date().toISOString(),
+        timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
       });
     },
     addAiMessage: (state, action) => {
@@ -37,7 +38,7 @@ export const chatSlice = createSlice({
         id: state.messages.length + 1,
         type: "ai",
         message: action.payload,
-        timestamp: new Date().toISOString(),
+        timestamp: moment().format("YYYY-MM-DD HH:mm:ss") ,
       });
     },
     setLoading: (state, action) => {

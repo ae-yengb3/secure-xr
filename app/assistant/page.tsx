@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/lib/hook";
 import { getReports } from "@/lib/utils/scan";
-import { addUserMessage, addAiMessage, setLoading } from "@/lib/features/chatSlice";
+import {
+  addUserMessage,
+  addAiMessage,
+  setLoading,
+} from "@/lib/features/chatSlice";
 import { chatWebSocketService } from "@/lib/utils/chatWebSocket";
 import {
   Shield,
@@ -38,8 +42,6 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 
-
-
 type Report = {
   id: string;
   url: string;
@@ -68,8 +70,9 @@ export default function AssistantPage() {
   const [selectedVulns, setSelectedVulns] = useState<string[]>([]);
   const dispatch = useAppDispatch();
   const { reports } = useAppSelector((state) => state.scan);
-  const { messages: chatHistory, loading: chatLoading } = useAppSelector((state) => state.chat);
-  const { token } = useAppSelector((state) => state.user);
+  const { messages: chatHistory, loading: chatLoading } = useAppSelector(
+    (state) => state.chat
+  );
 
   useEffect(() => {
     dispatch(getReports());
@@ -83,53 +86,54 @@ export default function AssistantPage() {
     });
   }, [dispatch]);
 
-  const availableReports = reports?.map((report, index) => ({
-    id: index.toString(),
-    url: report.url,
-    vulnerabilities: report.vulnerabilities,
-    date: new Date(report.start_time).toLocaleDateString(),
-  })) || [];
+  const availableReports =
+    reports?.map((report, index) => ({
+      id: index.toString(),
+      url: report.url,
+      vulnerabilities: report.vulnerabilities,
+      date: new Date(report.start_time).toLocaleDateString(),
+    })) || [];
 
-  const vulnerabilities = reports?.flatMap((report) => 
-    report.alerts?.map((alert) => ({
-      id: alert.id,
-      name: alert.alert_name,
-      risk: alert.risk,
-      description: alert.description,
-      url: alert.url,
-      marked_as_false_positive: alert.marked_as_false_positive,
-      resolved: alert.resolved,
-    })) || []
-  ) || [];
+  const vulnerabilities =
+    reports?.flatMap(
+      (report) =>
+        report.alerts?.map((alert) => ({
+          id: alert.id,
+          name: alert.alert_name,
+          risk: alert.risk,
+          description: alert.description,
+          url: alert.url,
+          marked_as_false_positive: alert.marked_as_false_positive,
+          resolved: alert.resolved,
+        })) || []
+    ) || [];
 
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return;
 
     const message = chatMessage;
     setChatMessage("");
-    
+
     // Add user message to chat
     dispatch(addUserMessage(message));
     dispatch(setLoading(true));
-    
+
     // Get selected vulnerabilities data with full details
-    const selectedVulnData = vulnerabilities.filter(vuln => 
+    const selectedVulnData = vulnerabilities.filter((vuln) =>
       selectedVulns.includes(vuln.id)
     );
 
     // Send message via WebSocket
     chatWebSocketService.sendMessage(message, selectedVulnData, {
       reports: reports || [],
-      allVulnerabilities: vulnerabilities
+      allVulnerabilities: vulnerabilities,
     });
   };
 
-
-
   const toggleVulnSelection = (vulnId: string) => {
-    setSelectedVulns(prev => 
-      prev.includes(vulnId) 
-        ? prev.filter(id => id !== vulnId)
+    setSelectedVulns((prev) =>
+      prev.includes(vulnId)
+        ? prev.filter((id) => id !== vulnId)
         : [...prev, vulnId]
     );
   };
@@ -209,15 +213,15 @@ export default function AssistantPage() {
                             selectedVulns.includes(vuln.id)
                               ? "border-[#0080ff] bg-[#0080ff]/10"
                               : "border-gray-700 hover:border-gray-600"
-                          } ${
-                            vuln.resolved ? "opacity-60" : ""
-                          } ${
+                          } ${vuln.resolved ? "opacity-60" : ""} ${
                             vuln.marked_as_false_positive ? "opacity-40" : ""
                           }`}
                           onClick={() => toggleVulnSelection(vuln.id)}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <div className="font-medium text-xs">{vuln.name}</div>
+                            <div className="font-medium text-xs">
+                              {vuln.name}
+                            </div>
                             <div className="flex gap-1">
                               {vuln.resolved && (
                                 <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">
@@ -229,20 +233,31 @@ export default function AssistantPage() {
                                   FP
                                 </span>
                               )}
-                              <div className={`text-xs px-1.5 py-0.5 rounded ${
-                                vuln.resolved || vuln.marked_as_false_positive
-                                  ? "bg-gray-500/20 text-gray-400"
-                                  : vuln.risk === "Critical" ? "bg-red-500/20 text-red-400" :
-                                  vuln.risk === "High" ? "bg-orange-500/20 text-orange-400" :
-                                  vuln.risk === "Medium" ? "bg-yellow-500/20 text-yellow-400" :
-                                  "bg-green-500/20 text-green-400"
-                              }`}>
+                              <div
+                                className={`text-xs px-1.5 py-0.5 rounded ${
+                                  vuln.resolved || vuln.marked_as_false_positive
+                                    ? "bg-gray-500/20 text-gray-400"
+                                    : vuln.risk === "Critical"
+                                    ? "bg-red-500/20 text-red-400"
+                                    : vuln.risk === "High"
+                                    ? "bg-orange-500/20 text-orange-400"
+                                    : vuln.risk === "Medium"
+                                    ? "bg-yellow-500/20 text-yellow-400"
+                                    : "bg-green-500/20 text-green-400"
+                                }`}
+                              >
                                 {vuln.risk}
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs text-gray-400 mb-1">{vuln.description.length > 50 ? vuln.description.substring(0, 50) + '...' : vuln.description}</div>
-                          <div className="text-xs text-gray-500">{vuln.url}</div>
+                          <div className="text-xs text-gray-400 mb-1">
+                            {vuln.description.length > 50
+                              ? vuln.description.substring(0, 50) + "..."
+                              : vuln.description}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {vuln.url}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -260,19 +275,22 @@ export default function AssistantPage() {
                     Ask questions about your security reports
                     {selectedVulns.length > 0 && (
                       <span className="ml-2 text-[#0080ff]">
-                        ({selectedVulns.length} vulnerability{selectedVulns.length !== 1 ? 'ies' : 'y'} selected)
+                        ({selectedVulns.length} vulnerability
+                        {selectedVulns.length !== 1 ? "ies" : "y"} selected)
                       </span>
                     )}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-1 space-y-4">
-                  <ScrollArea className="flex-1 w-full border rounded-lg p-4 bg-[#0a0a0a]">
+                  <ScrollArea className="flex-1 w-full border rounded-lg p-4 max-h-[calc(100vh-20rem)]">
                     <div className="space-y-4">
                       {chatHistory.map((chat) => (
                         <div
                           key={chat.id}
                           className={`flex gap-3 ${
-                            chat.type === "user" ? "justify-end" : "justify-start"
+                            chat.type === "user"
+                              ? "justify-end"
+                              : "justify-start"
                           }`}
                         >
                           {chat.type === "ai" && (
@@ -334,7 +352,8 @@ export default function AssistantPage() {
 
                   {selectedVulns.length === 0 && (
                     <div className="text-center p-4 text-gray-400 text-sm">
-                      Select one or more vulnerabilities from the sidebar to get more specific insights
+                      Select one or more vulnerabilities from the sidebar to get
+                      more specific insights
                     </div>
                   )}
                 </CardContent>
