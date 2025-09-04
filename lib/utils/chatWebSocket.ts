@@ -15,8 +15,8 @@ export class ChatWebSocketService {
     });
   }
 
-  sendMessage(message: string, selectedVulnerabilities: VulnerabilityDetail[], context?: any): void {
-    wsManager.sendChatMessage(message, selectedVulnerabilities, context);
+  sendMessage(message: string, selectedVulnerabilities: VulnerabilityDetail[], context?: any, previousMessages?: any[]): void {
+    wsManager.sendChatMessage(message, selectedVulnerabilities, context, previousMessages);
   }
 
   clearMessageHandler(): void {

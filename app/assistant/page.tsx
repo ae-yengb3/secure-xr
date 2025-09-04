@@ -124,10 +124,15 @@ export default function AssistantPage() {
     );
 
     // Send message via WebSocket
+    const compiledHistory = chatHistory.map(msg => ({
+      role: msg.type === 'user' ? 'user' : 'assistant',
+      content: msg.message
+    }));
+    
     chatWebSocketService.sendMessage(message, selectedVulnData, {
       reports: reports || [],
       allVulnerabilities: vulnerabilities,
-    });
+    }, compiledHistory);
   };
 
   const toggleVulnSelection = (vulnId: string) => {
@@ -307,7 +312,7 @@ export default function AssistantPage() {
                                 : "bg-gray-800 text-gray-100"
                             }`}
                           >
-                            <p className="text-sm">{chat.message}</p>
+                            <div className="text-sm" dangerouslySetInnerHTML={{ __html: chat.message }} />
                             <p className="text-xs opacity-70 mt-1">
                               {chat.timestamp}
                             </p>

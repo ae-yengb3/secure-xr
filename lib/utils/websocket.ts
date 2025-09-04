@@ -58,13 +58,14 @@ class WebSocketManager {
     this.messageHandlers.set(type, handler);
   }
 
-  sendChatMessage(message: string, selectedVulnerabilities: VulnerabilityDetail[], context?: any): void {
+  sendChatMessage(message: string, selectedVulnerabilities: VulnerabilityDetail[], context?: any, previousMessages?: any[]): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({
         type: 'chat_message',
         message,
         selectedVulnerabilities,
         context,
+        previousMessages,
         timestamp: Date.now()
       }));
     }
