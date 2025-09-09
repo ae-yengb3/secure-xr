@@ -26,6 +26,9 @@ export const scanSlice = createSlice({
             state.loading = false
             state.error = null
         },
+        updateScansFromSocket: (state, action) => {
+            state.scans = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -65,4 +68,5 @@ export const scanSlice = createSlice({
     },
 })
 
+export const { reset, updateScansFromSocket } = scanSlice.actions
 export default scanSlice.reducer

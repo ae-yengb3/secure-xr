@@ -35,6 +35,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { getScans, startScan } from "@/lib/utils/scan";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
 import { getMe } from "@/lib/utils/user";
+import { updateScansFromSocket } from "@/lib/features/scanSlice";
+import { wsManager } from "@/lib/utils/websocket";
 import {
   Sidebar,
   SidebarContent,
@@ -100,6 +102,22 @@ export default function ScanPage() {
   useEffect(() => {
     dispatch(getMe());
     dispatch(getScans());
+
+    // Handle socket messages for scan progress
+    wsManager.onMessage('scan_progress_update', (data) => {
+      // Update Redux with all scans
+      dispatch(updateScansFromSocket(data.all_scans));
+      
+      // Temporarily update progress and remark on this page
+      setScanProgress(data.progress);
+      setScanningRemark(data.remark);
+      
+      if (data.progress < 100) {
+        setIsScanning(true);
+      } else {
+        setIsScanning(false);
+      }
+    });
   }, []);
 
   useEffect(() => {
