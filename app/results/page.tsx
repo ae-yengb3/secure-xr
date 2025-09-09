@@ -45,10 +45,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { getAllScanResults } from "../actions/scan-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
-import type { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import { getReports } from "@/lib/utils/scan";
+import { exportReportsToCSV } from "@/lib/utils/csvExport";
 import {
   Sidebar,
   SidebarContent,
@@ -359,9 +358,15 @@ export default function ResultsPage() {
                         </div>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button variant="outline" size="sm" className="gap-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-1"
+                      onClick={() => reports && exportReportsToCSV(reports)}
+                      disabled={!reports || reports.length === 0}
+                    >
                       <Download className="h-4 w-4" />
-                      Export
+                      Export CSV
                     </Button>
                   </div>
                 </div>

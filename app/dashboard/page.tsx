@@ -7,7 +7,6 @@ import {
   CheckCircle,
   Clock,
   Play,
-  Users,
   FileText,
   ArrowRight,
   X,
@@ -31,6 +30,7 @@ import { getReports, getScans } from "@/lib/utils/scan";
 import { ScanResult, VulnerabilityResult } from "@/lib/scan-engine";
 import moment from "moment";
 import { wsManager } from "@/lib/utils/websocket";
+import { exportReportsToCSV } from "@/lib/utils/csvExport";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -440,16 +440,12 @@ export default function DashboardPage() {
                   <Play className="mr-2 h-4 w-4" />
                   Start New Scan
                 </Button>
+
                 <Button
                   variant="outline"
                   className="w-full border-gray-700 hover:bg-gray-800 hover:text-white justify-start"
-                >
-                  <Users className="mr-2 h-4 w-4" />
-                  Manage Hosts
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full border-gray-700 hover:bg-gray-800 hover:text-white justify-start"
+                  onClick={() => reports && exportReportsToCSV(reports)}
+                  disabled={!reports || reports.length === 0}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Export Report
