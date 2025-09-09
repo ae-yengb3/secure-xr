@@ -104,7 +104,7 @@ export default function ScanPage() {
     dispatch(getScans());
 
     // Handle socket messages for scan progress
-    wsManager.onMessage('scan_progress_update', (data) => {
+    wsManager.onMessage('scan_progress', (data) => {
       // Update Redux with all scans
       dispatch(updateScansFromSocket(data.all_scans));
       
